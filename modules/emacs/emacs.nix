@@ -98,13 +98,6 @@ in
         '';
       };
 
-      beacon = {
-        enable = true;
-        diminish = [ "beacon-mode" ];
-        command = [ "beacon-mode" ];
-        config = "(beacon-mode 1)";
-      };
-
       browse-at-remote = {
         command = [ "browse-at-remote" ];
       };

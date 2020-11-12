@@ -26,6 +26,7 @@ in
     git
     gnupg
     htop
+    jdk
     jq
     kubectl
     kubectx

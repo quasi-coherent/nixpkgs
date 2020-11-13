@@ -17,13 +17,13 @@ in
 
   nixpkgs.config = {
     allowUnfree = true;
-    allowUnsupportedSystem = true;
   };
 
   home.packages = with pkgs; [
     awscli
     awslogs
     direnv
+    feh
     fd
     fzf
     git
@@ -33,14 +33,25 @@ in
     kubectl
     kubectx
     kustomize
+    metals
     niv
     nixfmt
+    opam
+    openjdk11
     nodejs
     ripgrep
+    sbt
     tree
+    vim
     wget
+    yarn
     zsh
   ] ++ builtins.attrValues (er-nix.tools.haskell-language-servers);
+
+  home.sessionVariables = {
+    EDITOR = "emacsclient";
+    JAVA_HOME = pkgs.openjdk11;
+  };
 
   programs.home-manager.enable = true;
 
@@ -49,5 +60,16 @@ in
     enable = true;
     userName = "Daniel Donohue";
     userEmail = "ddonohue@earnestresearch.com";
+
+    extraConfig = {
+      github.user = "quasi-coherent";
+      pull.rebase = true;
+      http.postBuffer = 1048576000;
+    };
+
+    signing = {
+      key = "439E7CFD05576658";
+      signByDefault = true;
+    };
   };
 }

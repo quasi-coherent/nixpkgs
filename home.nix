@@ -1,6 +1,9 @@
 { config, pkgs, ... }:
 
-let imports = [ ./modules ];
+let
+  imports = [ ./modules ];
+  sources = import ./nix;
+  er-nix = import sources.er-nix;
 
 in
 {
@@ -37,7 +40,7 @@ in
     tree
     wget
     zsh
-  ];
+  ] ++ builtins.attrValues (er-nix.tools.haskell-language-servers);
 
   programs.home-manager.enable = true;
 

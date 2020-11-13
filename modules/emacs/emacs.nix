@@ -305,6 +305,9 @@ in
       lsp-haskell = {
         enable = true;
         defer = true;
+        config = ''
+          (setq lsp-haskell-process-path-hie "haskell-language-server-wrapper")
+        '';
         hook = [''
           (haskell-mode . (lambda ()
                            (direnv-update-environment)

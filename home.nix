@@ -49,7 +49,7 @@ in
   ] ++ builtins.attrValues (er-nix.tools.haskell-language-servers);
 
   home.sessionVariables = {
-    EDITOR = "emacsclient";
+    EDITOR = "vim";
     JAVA_HOME = pkgs.openjdk11;
   };
 

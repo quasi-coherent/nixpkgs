@@ -65,6 +65,7 @@ in
       github.user = "quasi-coherent";
       pull.rebase = true;
       http.postBuffer = 1048576000;
+      credential.helper = "osxkeychain";
     };
 
     signing = {

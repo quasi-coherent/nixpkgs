@@ -9,19 +9,14 @@ in
 {
   inherit imports;
 
-  home = {
-    username = builtins.getEnv "USER";
-    homeDirectory = builtins.getEnv "HOME";
-    stateVersion = "21.03";
-  };
-
-  nixpkgs.config = {
-    allowUnfree = true;
-  };
+  home.username = builtins.getEnv "USER";
+  home.homeDirectory = builtins.getEnv "HOME";
+  home.stateVersion = "21.03";
 
   home.packages = with pkgs; [
     awscli
     awslogs
+    cachix
     direnv
     feh
     fd
@@ -53,7 +48,11 @@ in
     JAVA_HOME = pkgs.openjdk11;
   };
 
-  programs.home-manager.enable = true;
+  nixpkgs.config = {
+    allowUnfree = true;
+  };
+
+  programs.direnv.enableZshIntegration = true;
 
   programs.git = {
     package = pkgs.git;
@@ -73,4 +72,6 @@ in
       signByDefault = true;
     };
   };
+
+  programs.home-manager.enable = true;
 }

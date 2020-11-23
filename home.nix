@@ -1,8 +1,7 @@
-{ config, pkgs, ... }:
-
 let
   imports = [ ./modules ];
   sources = import ./nix;
+  pkgs = import sources.nixpkgs {};
   er-nix = import sources.er-nix;
 
 in
@@ -41,7 +40,6 @@ in
     vim
     wget
     yarn
-    zsh
   ] ++ builtins.attrValues (er-nix.tools.haskell-language-servers);
 
   home.sessionVariables = {

@@ -7,7 +7,6 @@ let
   ];
   extraInitExtra = builtins.foldl' (soFar: new: soFar + "\n" + builtins.readFile new) "" extras;
   shellAliases = {
-    brew = "/usr/local/bin/brew";
     garbage = "nix-collect-garbage -d && docker image prune --force";
   };
 in

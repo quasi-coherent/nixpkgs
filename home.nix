@@ -18,7 +18,6 @@ in
     bat
     cachix
     direnv
-    docker
     feh
     fd
     fzf
@@ -47,6 +46,8 @@ in
     EDITOR = "vim";
     JAVA_HOME = pkgs.openjdk11;
   };
+
+  home.sessionPath = [ "/usr/local/bin" ];
 
   nixpkgs.config = {
     allowUnfree = true;

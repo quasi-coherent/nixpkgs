@@ -16,6 +16,7 @@ in
   home.packages = with pkgs; [
     awscli
     awslogs
+    bat
     cachix
     direnv
     feh
@@ -55,8 +56,8 @@ in
   programs.direnv.enableZshIntegration = true;
 
   programs.git = {
-    package = pkgs.git;
     enable = true;
+    package = pkgs.git;
     userName = "Daniel Donohue";
     userEmail = "ddonohue@earnestresearch.com";
 

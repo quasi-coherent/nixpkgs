@@ -238,6 +238,8 @@ in
           (setq haskell-process-log t
                 haskell-notify-p t)
 
+          (setq haskell-stylish-on-save t)
+
           (setq haskell-process-args-cabal-repl
                 '("--ghc-options=+RTS -M500m -RTS -ferror-spans -fshow-loaded-modules"))
         '';
@@ -427,6 +429,8 @@ in
         };
       };
 
+      typescript-mode.enable = true;
+
       which-key = {
         enable = true;
         command = [ "which-key-mode" "which-key-add-major-mode-key-based-replacements" ];
@@ -435,6 +439,7 @@ in
         config = "(which-key-mode)";
       };
 
+      yaml-mode.enable = true;
     };
   };
 }

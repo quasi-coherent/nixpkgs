@@ -18,6 +18,7 @@ in
     bat
     cachix
     direnv
+    docker
     feh
     fd
     fzf

@@ -385,10 +385,8 @@ in
       magit = {
         enable = true;
         diminish = ["auto-revert-mode"];
-        bindLocal = {
-          magit-status-mode-map = {
-            "C-c C-g" = "magit-status";
-          };
+        bind = {
+          "C-c C-g" = "magit-status";
         };
       };
 

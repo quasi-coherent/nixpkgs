@@ -382,6 +382,16 @@ in
         after = [ "flycheck" "lsp-ui" ];
       };
 
+      magit = {
+        enable = true;
+        diminish = ["auto-revert-mode"];
+        bindLocal = {
+          magit-status-mode-map = {
+            "C-c C-g" = "magit-status";
+          };
+        };
+      };
+
       multiple-cursors = {
         enable = true;
         bind = {

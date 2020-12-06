@@ -2,13 +2,14 @@
 
 let
   extras = [
-    ./zsh/emacs.zsh
-    ./zsh/extract.zsh
+    ./emacs.zsh
+    ./extract.zsh
   ];
   extraInitExtra = builtins.foldl' (soFar: new: soFar + "\n" + builtins.readFile new) "" extras;
   shellAliases = {
     garbage = "nix-collect-garbage -d && docker image prune --force";
   };
+
 in
 {
   programs.zsh = {

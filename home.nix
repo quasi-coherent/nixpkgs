@@ -4,12 +4,30 @@ let
   pkgs = import sources.nixpkgs {};
   er-nix = import sources.er-nix;
 
+  homeDir = builtins.getEnv "HOME";
+
+  # Versions of hls not available in standard nixpkgs
+  hsPkgs = builtins.attrValues (er-nix.tools.haskell-language-servers);
+
+  pyPkgs = with pkgs; [
+    python37
+    python37Packages.python-language-server
+    python37Packages.virtualenv
+  ];
+
+  scalaPkgs = with pkgs; [
+    openjdk11
+    sbt
+    scala_2_12
+    metals
+  ];
+
 in
 {
   inherit imports;
 
   home.username = builtins.getEnv "USER";
-  home.homeDirectory = builtins.getEnv "HOME";
+  home.homeDirectory = homeDir;
   home.stateVersion = "21.03";
 
   home.packages = with pkgs; [
@@ -18,36 +36,33 @@ in
     bat
     cachix
     direnv
-    feh
+    exiftool
     fd
+    feh
+    ffmpeg
     fzf
-    git
     gnupg
     htop
     jq
     kubectl
     kubectx
     kustomize
-    metals
     niv
     nixfmt
-    opam
-    openjdk11
     nodejs
+    opam
     ripgrep
-    sbt
     tree
     vim
     wget
-    yarn
-  ] ++ builtins.attrValues (er-nix.tools.haskell-language-servers);
+  ] ++ hsPkgs ++ pyPkgs ++ scalaPkgs;
 
   home.sessionVariables = {
     EDITOR = "vim";
     JAVA_HOME = pkgs.openjdk11;
   };
 
-  home.sessionPath = [ "/usr/local/bin" ];
+  home.sessionPath = [ "/usr/local/bin" "${homeDir}/.bin" ];
 
   nixpkgs.config = {
     allowUnfree = true;

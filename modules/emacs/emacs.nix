@@ -27,7 +27,8 @@ in
       (custom-set-variables '(package-archives
                               '(("marmalade" . "https://marmalade-repo.org/packages/")
                                 ("melpa"     . "https://melpa.org/packages/")
-                                ("elpa"      . "https://elpa.gnu.org/packages/"))))
+                                ("elpa"      . "https://elpa.gnu.org/packages/")
+                                ("org"       . "http://orgmode.org/elpa/"))))
 
       (package-initialize)
 
@@ -429,8 +430,6 @@ in
                 org-hide-leading-stars t
                 org-hide-emphasis-markers t)
 
-          (setq org-tag-alist rah-org-tag-alist)
-
           ;; Add some todo keywords.
           (setq org-todo-keywords
                 '((sequence "TODO(t)"
@@ -440,17 +439,6 @@ in
                             "|"
                             "DONE(d!)"
                             "CANCELED(c@!)")))
-
-          ;; Setup org capture.
-          (setq org-default-notes-file (rah-org-file "capture"))
-
-          ;; Active Org-babel languages
-          (org-babel-do-load-languages 'org-babel-load-languages
-                                       '((plantuml . t)
-                                         (http . t)
-                                         (shell . t)
-                                         (sql . t)
-                                         (verb . t)))
 
           ;; Unfortunately org-mode tends to take over keybindings that
           ;; start with C-c.
@@ -465,8 +453,7 @@ in
         defer = true;
         config = ''
           ;; Set up agenda view.
-          (setq org-agenda-files (rah-all-org-files)
-                org-agenda-span 5
+          (setq org-agenda-span 5
                 org-deadline-warning-days 14
                 org-agenda-show-all-dates t
                 org-agenda-skip-deadline-if-done t
@@ -475,47 +462,9 @@ in
         '';
       };
 
-      org-table = {
-        enable = true;
-        after = [ "org" ];
-        command = [ "orgtbl-to-generic" ];
-        hook = [
-          # For orgtbl mode, add a radio table translator function for
-          # taking a table to a psql internal variable.
-          ''
-            (orgtbl-mode
-             . (lambda ()
-                 (defun rah-orgtbl-to-psqlvar (table params)
-                   "Converts an org table to an SQL list inside a psql internal variable"
-                   (let* ((params2
-                           (list
-                            :tstart (concat "\\set " (plist-get params :var-name) " '(")
-                            :tend ")'"
-                            :lstart "("
-                            :lend "),"
-                            :sep ","
-                            :hline ""))
-                          (res (orgtbl-to-generic table (org-combine-plists params2 params))))
-                     (replace-regexp-in-string ",)'$"
-                                               ")'"
-                                               (replace-regexp-in-string "\n" "" res))))))
-          ''
-        ];
-        config = ''
-          (unbind-key "C-c SPC" orgtbl-mode-map)
-          (unbind-key "C-c w" orgtbl-mode-map)
-        '';
-        extraConfig = ''
-          :functions org-combine-plists
-        '';
-      };
-
       org-capture = {
         enable = true;
         after = [ "org" ];
-        config = ''
-          (setq org-capture-templates rah-org-capture-templates)
-        '';
       };
 
       org-clock = {
@@ -527,43 +476,9 @@ in
         '';
       };
 
-      org-duration = {
-        enable = true;
-        after = [ "org" ];
-        config = ''
-          ;; I always want clock tables and such to be in hours, not days.
-          (setq org-duration-format (quote h:mm))
-        '';
-      };
-
-      org-refile = {
-        enable = true;
-        after = [ "org" ];
-        config = ''
-          ;; Refiling should include not only the current org buffer but
-          ;; also the standard org files. Further, set up the refiling to
-          ;; be convenient with IDO. Follows norang's setup quite closely.
-          (setq org-refile-targets '((nil :maxlevel . 2)
-                                     (org-agenda-files :maxlevel . 2))
-                org-refile-use-outline-path t
-                org-outline-path-complete-in-steps nil
-                org-refile-allow-creating-parent-nodes 'confirm)
-        '';
-      };
-
       org-superstar = {
         enable = true;
         hook = [ "(org-mode . org-superstar-mode)" ];
-      };
-
-      org-tree-slide = {
-        enable = true;
-        command = [ "org-tree-slide-mode" ];
-      };
-
-      org-variable-pitch = {
-        enable = false;
-        hook = [ "(org-mode . org-variable-pitch-minor-mode)" ];
       };
 
      projectile = {

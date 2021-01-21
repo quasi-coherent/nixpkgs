@@ -51,6 +51,7 @@ in
     nixfmt
     nodejs
     opam
+    pgformatter
     ripgrep
     tree
     vim

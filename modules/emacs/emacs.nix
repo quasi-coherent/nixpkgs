@@ -505,6 +505,15 @@ in
         '';
       };
 
+      sqlformat = {
+        enable = true;
+        config = ''
+          (setq sqlformat-command 'pgformatter)
+          (setq sqlformat-args '("-s2" "-g"))
+        '';
+        hook = [ "(sql-mode . sqlformat-on-save-mode)" ];
+      };
+
       swiper = {
         enable = true;
         command = [ "swiper" "swiper-all" "swiper-isearch" ];

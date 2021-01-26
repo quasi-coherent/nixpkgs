@@ -37,6 +37,7 @@ in
     cachix
     direnv
     exiftool
+    exa
     fd
     feh
     ffmpeg

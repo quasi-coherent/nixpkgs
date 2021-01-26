@@ -55,7 +55,6 @@ in
       theme = "bureau";
       plugins = [
         "git"
-        "common-aliases"
         "ssh-agent"
       ];
     };

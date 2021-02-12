@@ -44,6 +44,7 @@ in
     fzf
     gnupg
     htop
+    httpie
     jq
     kubectl
     kubectx

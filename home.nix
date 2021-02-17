@@ -6,7 +6,10 @@ let
 
   homeDir = builtins.getEnv "HOME";
 
-  # Versions of hls not available in standard nixpkgs
+  goPkgs = with pkgs; [
+    gopls
+  ];
+
   hsPkgs = builtins.attrValues (er-nix.tools.haskell-language-servers);
 
   pyPkgs = with pkgs; [
@@ -16,9 +19,6 @@ let
   ];
 
   scalaPkgs = with pkgs; [
-    openjdk11
-    sbt
-    scala_2_12
     metals
   ];
 
@@ -58,7 +58,7 @@ in
     tree
     vim
     wget
-  ] ++ hsPkgs ++ pyPkgs ++ scalaPkgs;
+  ] ++ goPkgs ++ hsPkgs ++ pyPkgs ++ scalaPkgs;
 
   home.sessionVariables = {
     EDITOR = "vim";

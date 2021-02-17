@@ -201,6 +201,18 @@ in
         init = "(global-git-gutter-mode t)";
       };
 
+      go-mode = {
+        enable = true;
+        mode = [
+          ''("\\.go\\'" . go-mode)''
+        ];
+        hook = [
+          "(go-mode . lsp-deferred)"
+          "(before-save . lsp-format-buffer)"
+          "(before-save . lsp-organize-imports)"
+        ];
+      };
+
       js = {
         enable = true;
         mode = [
@@ -494,6 +506,13 @@ in
           (projectile-mode 1)
         '';
       };
+
+     rustic = {
+       enable = true;
+       config = ''
+         (setq rustic-lsp-server 'rls)
+       '';
+     };
 
       smartparens = {
         enable = true;

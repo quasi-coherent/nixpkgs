@@ -2,7 +2,6 @@ let
   imports = [ ./modules ];
   sources = import ./nix;
   pkgs = import sources.nixpkgs {};
-  er-nix = import sources.er-nix;
 
   homeDir = builtins.getEnv "HOME";
 
@@ -10,7 +9,9 @@ let
     gopls
   ];
 
-  hsPkgs = builtins.attrValues (er-nix.tools.haskell-language-servers);
+  hsPkgs = with pkgs; [
+    haskellPackages.haskell-language-server
+  ];
 
   pyPkgs = with pkgs; [
     python37
@@ -58,7 +59,7 @@ in
     tree
     vim
     wget
-  ] ++ goPkgs ++ hsPkgs ++ pyPkgs ++ scalaPkgs;
+  ] ++ goPkgs ++ pyPkgs ++ hsPkgs ++ scalaPkgs;
 
   home.sessionVariables = {
     EDITOR = "vim";
@@ -77,19 +78,19 @@ in
     enable = true;
     package = pkgs.git;
     userName = "Daniel Donohue";
-    userEmail = "ddonohue@earnestresearch.com";
+    userEmail = "d.michael.donohue@gmail.com";
 
     extraConfig = {
       github.user = "quasi-coherent";
       pull.rebase = true;
       http.postBuffer = 1048576000;
-      credential.helper = "osxkeychain";
+      # credential.helper = "osxkeychain";
     };
 
-    signing = {
-      key = "439E7CFD05576658";
-      signByDefault = true;
-    };
+    # signing = {
+    #   key = "439E7CFD05576658";
+    #   signByDefault = true;
+    # };
   };
 
   programs.home-manager.enable = true;

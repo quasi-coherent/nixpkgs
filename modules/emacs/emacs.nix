@@ -25,8 +25,7 @@ in
       (setq create-lockfiles nil)
 
       (custom-set-variables '(package-archives
-                              '(("marmalade" . "https://marmalade-repo.org/packages/")
-                                ("melpa"     . "https://melpa.org/packages/")
+                              '(("melpa"     . "https://melpa.org/packages/")
                                 ("elpa"      . "https://elpa.gnu.org/packages/")
                                 ("org"       . "http://orgmode.org/elpa/"))))
 

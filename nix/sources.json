@@ -11,18 +11,6 @@
         "url": "https://github.com/nix-community/NUR/archive/619a7a9ccef88d412fa58e5345b671fbc41fe9f9.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
-    "er-nix": {
-        "branch": "master",
-        "description": "Common Nix code for Earnest Research",
-        "homepage": null,
-        "owner": "EarnestResearch",
-        "repo": "er-nix",
-        "rev": "251bb498625feab89fe3efacd6f6eab36b82c904",
-        "sha256": "0fk8fpyncarva1mmj8rcmhcgir9fq5sys3blv85yphca445qrlnw",
-        "type": "tarball",
-        "url": "https://github.com/EarnestResearch/er-nix/archive/251bb498625feab89fe3efacd6f6eab36b82c904.tar.gz",
-        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-    },
     "home-manager": {
         "branch": "release-20.09",
         "description": "Manage a user environment using Nix  [maintainer=@rycee] ",

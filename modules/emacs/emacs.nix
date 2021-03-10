@@ -1,7 +1,7 @@
 { pkgs, ... }:
 
 let
-  nurNoPkgs = import (import ../../nix).NUR { };
+  nurNoPkgs = import (import ../../nix).NUR {};
 in
 {
   imports = [ nurNoPkgs.repos.rycee.hmModules.emacs-init ];
@@ -312,6 +312,16 @@ in
       lsp-diagnostics = {
         enable = true;
         after = [ "lsp-mode" ];
+      };
+
+      lsp-go = {
+        enable = true;
+        defer = true;
+        hook = [''
+          (go-mode . (lambda ()
+                      (direnv-update-environment)
+                      (lsp)))
+        ''];
       };
 
       lsp-haskell = {

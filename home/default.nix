@@ -36,7 +36,7 @@ in
   home.stateVersion = "21.03";
 
   home.packages = with pkgs; [
-    awscli
+    awscli2
     awslogs
     bat
     cachix

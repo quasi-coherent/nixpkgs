@@ -102,6 +102,21 @@ in
         command = [ "browse-at-remote" ];
       };
 
+      company = {
+        enable = true;
+        diminish = [ "company-mode" ];
+        init = "(global-company-mode t)";
+      };
+
+      company-box = {
+        enable = true;
+        diminish = [ "company-box" ];
+        after = [ "company" ];
+        hook = [
+          "(company-mode . company-box-mode)"
+        ];
+      };
+
       counsel = {
         enable = true;
         bind = {
@@ -500,26 +515,28 @@ in
         hook = [ "(org-mode . org-superstar-mode)" ];
       };
 
-     projectile = {
+      projectile = {
+         enable = true;
+         diminish = [ "projectile-mode" ];
+         command = [ "projectile-mode" "projectile-project-root" ];
+         bindKeyMap = {
+           "C-c p" = "projectile-command-map";
+         };
+         config = ''
+           (setq projectile-enable-caching t
+                 projectile-completion-system 'ivy)
+           (projectile-mode 1)
+         '';
+       };
+
+      protobuf-mode.enable = true;
+
+      rustic = {
         enable = true;
-        diminish = [ "projectile-mode" ];
-        command = [ "projectile-mode" "projectile-project-root" ];
-        bindKeyMap = {
-          "C-c p" = "projectile-command-map";
-        };
         config = ''
-          (setq projectile-enable-caching t
-                projectile-completion-system 'ivy)
-          (projectile-mode 1)
+          (setq rustic-lsp-server 'rls)
         '';
       };
-
-     rustic = {
-       enable = true;
-       config = ''
-         (setq rustic-lsp-server 'rls)
-       '';
-     };
 
       smartparens = {
         enable = true;

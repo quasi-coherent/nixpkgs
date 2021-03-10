@@ -531,12 +531,7 @@ in
 
       protobuf-mode.enable = true;
 
-      rustic = {
-        enable = true;
-        config = ''
-          (setq rustic-lsp-server 'rls)
-        '';
-      };
+      rustic.enable = true;
 
       smartparens = {
         enable = true;

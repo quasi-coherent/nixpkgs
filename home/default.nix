@@ -19,6 +19,10 @@ let
     python37Packages.virtualenv
   ];
 
+  rsPkgs = with pkgs; [
+    rust-analyzer
+  ];
+
   scalaPkgs = with pkgs; [
     metals
   ];
@@ -47,6 +51,7 @@ in
     htop
     httpie
     jq
+    kops
     kubectl
     kubectx
     kustomize
@@ -59,7 +64,7 @@ in
     tree
     vim
     wget
-  ] ++ goPkgs ++ pyPkgs ++ hsPkgs ++ scalaPkgs;
+  ] ++ goPkgs ++ pyPkgs ++ hsPkgs ++ rsPkgs ++ scalaPkgs;
 
   home.sessionVariables = {
     EDITOR = "vim";

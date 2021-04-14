@@ -14,8 +14,8 @@ let
   ];
 
   pyPkgs = with pkgs; [
+    nodePackages.pyright
     python37
-    python37Packages.python-language-server
     python37Packages.virtualenv
   ];
 
@@ -38,6 +38,7 @@ in
   home.packages = with pkgs; [
     awscli2
     awslogs
+    aws-vault
     bat
     cachix
     direnv
@@ -64,6 +65,7 @@ in
     tree
     vim
     wget
+    youtube-dl
   ] ++ goPkgs ++ pyPkgs ++ hsPkgs ++ rsPkgs ++ scalaPkgs;
 
   home.sessionVariables = {
@@ -73,9 +75,7 @@ in
 
   home.sessionPath = [ "/usr/local/bin" "${homeDir}/.bin" ];
 
-  nixpkgs.config = {
-    allowUnfree = true;
-  };
+  nixpkgs.config.allowUnfree = true;
 
   programs.home-manager.enable = true;
 

@@ -31,9 +31,6 @@ in
 
       (package-initialize)
 
-      (when (not package-archive-contents)
-     	      (package-refresh-contents))
-
       (setq user-full-name "Daniel Donohue"
 	    user-mail-address "d.michael.donohue@gmail.com")
 
@@ -96,6 +93,16 @@ in
         config = ''
           (setq avy-all-windows t)
         '';
+      };
+
+      blacken = {
+        enable = true;
+        config = ''
+          (setq blacken-only-if-project-is-blackened t)
+        '';
+        hook = [
+          "(python-mode . blacken-mode)"
+        ];
       };
 
       browse-at-remote = {
@@ -191,6 +198,8 @@ in
         defer = true;
         config = "(setq tags-revert-without-query t)";
       };
+
+      flx.enable = true;
 
       flycheck = {
         enable = true;
@@ -295,7 +304,8 @@ in
         config = ''
           (setq ivy-use-virtual-buffers t
                 ivy-count-format "%d/%d "
-                ivy-virtual-abbreviate 'full)
+                ivy-virtual-abbreviate 'full
+                ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
 
           (ivy-mode 1)
         '';
@@ -379,8 +389,7 @@ in
           (setq lsp-diagnostics-provider :flycheck
                 lsp-eldoc-render-all nil
                 lsp-modeline-code-actions-enable nil
-                lsp-modeline-diagnostics-enable nil
-                lsp-modeline-workspace-status-enable nil)
+                lsp-modeline-diagnostics-enable nil)
           (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
         '';
       };
@@ -388,6 +397,17 @@ in
       lsp-modeline = {
         enable = true;
         after = [ "lsp-mode" ];
+      };
+
+      lsp-pyright = {
+        enable = true;
+        defer = true;
+        hook = [''
+          (python-mode . (lambda ()
+                           (direnv-update-environment)
+                           (require 'lsp-pyright)
+                           (lsp)))
+        ''];
       };
 
       lsp-ui = {
@@ -531,6 +551,17 @@ in
 
       protobuf-mode.enable = true;
 
+      python = {
+        enable = true;
+        mode = [
+          ''("\\.py\\'" . python-mode)''
+        ];
+        config = ''
+          (setq tab-width 4)
+          (setq py-indent-offset 4)
+        '';
+      };
+
       rustic.enable = true;
 
       smartparens = {
@@ -559,6 +590,8 @@ in
           "C-s" = "swiper-isearch";
         };
       };
+
+      terraform-mode.enable = true;
 
       typescript-mode.enable = true;
 

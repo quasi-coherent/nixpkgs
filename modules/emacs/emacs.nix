@@ -305,7 +305,8 @@ in
           (setq ivy-use-virtual-buffers t
                 ivy-count-format "%d/%d "
                 ivy-virtual-abbreviate 'full
-                ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
+                ivy-re-builders-alist '((swiper-isearch . ivy--regex-plus)
+                                        (t              . ivy--regex-fuzzy)))
 
           (ivy-mode 1)
         '';

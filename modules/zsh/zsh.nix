@@ -2,8 +2,9 @@
 
 let
   extras = [
-    ./emacs.zsh
-    ./extract.zsh
+    ./extras/emacs.zsh
+    ./extras/extract.zsh
+    ./extras/json-pretty.zsh
   ];
   extraInitExtra = builtins.foldl' (soFar: new: soFar + "\n" + builtins.readFile new) "" extras;
   shellAliases = {

@@ -49,19 +49,22 @@ in
     ffmpeg
     fzf
     gnupg
+    grpcurl
     htop
     httpie
     jq
+    k9s
     kops
     kubectl
     kubectx
-    kustomize
+    kubernetes-helm
     niv
     nixfmt
     nodejs
     opam
     pgformatter
     ripgrep
+    stern
     tree
     vim
     wget

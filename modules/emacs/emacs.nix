@@ -230,7 +230,10 @@ in
           ''("\\.go\\'" . go-mode)''
         ];
         hook = [
-          "(go-mode . lsp-deferred)"
+          "(go-mode . (lambda ()
+                       (setq indent-tabs-mode 1)
+                       (setq tab-width 4)
+                       (lsp-deferred)))"
         ];
       };
 

@@ -9,6 +9,7 @@ let
   extraInitExtra = builtins.foldl' (soFar: new: soFar + "\n" + builtins.readFile new) "" extras;
   shellAliases = {
     garbage = "nix-collect-garbage -d && docker image prune --force";
+    fzf = "fzf --height 50% --border";
   };
 
 in

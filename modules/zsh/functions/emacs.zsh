@@ -1,0 +1,1 @@
+e() { command emacs -nw "$@" }

@@ -1,15 +1,17 @@
-{ config, lib, pkgs, ... }:
+{ config, ... }:
 
 let
-  extras = [
-    ./extras/emacs.zsh
-    ./extras/extract.zsh
-    ./extras/json-pretty.zsh
+  functions = [
+    ./functions/cargo-clean-all.zsh
+    ./functions/emacs.zsh
+    ./functions/extract.zsh
+    ./functions/json-pretty.zsh
   ];
-  extraInitExtra = builtins.foldl' (soFar: new: soFar + "\n" + builtins.readFile new) "" extras;
+  initExtraFunctions = builtins.foldl' (acc: f: acc + "\n" + builtins.readFile f) "" functions;
   shellAliases = {
-    garbage = "nix-collect-garbage -d && docker image prune --force";
+    nuke-all = "nix-collect-garbage -d && docker system prune --volumes --force";
     fzf = "fzf --height 50% --border";
+    gcm = "git checkout master 2>/dev/null || git checkout main";
   };
 
 in
@@ -18,7 +20,10 @@ in
     inherit shellAliases;
 
     enable = true;
-    enableAutosuggestions = true;
+
+    autocd = true;
+    autosuggestion.enable = true;
+    defaultKeymap = "emacs";
     enableCompletion = true;
     history.extended = true;
 
@@ -27,30 +32,38 @@ in
 
     bindkey -e
 
-    if [ -e ~/.nix-profile/etc/profile.d/nix.sh ]; then
-      . ~/.nix-profile/etc/profile.d/nix.sh
+    if [ -f ${config.home.homeDirectory}/.nix-profile/etc/profile.d/nix.sh ]; then
+      source ${config.home.homeDirectory}/.nix-profile/etc/profile.d/nix.sh
     fi
 
-    if [ -e ~/.nix-profile/etc/profile.d/hm-session-vars.sh ]; then
-      . ~/.nix-profile/etc/profile.d/hm-session-vars.sh
+    if [ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then
+      source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+    fi
+
+    if [ -f ${config.home.homeDirectory}/.nix-profile/etc/profile.d/hm-session-vars.sh ]; then
+      source ${config.home.homeDirectory}/.nix-profile/etc/profile.d/hm-session-vars.sh
+    fi
+
+    if [ -f /usr/local/share/zsh/site-functions/aws_zsh_completer.sh ]; then
+      source /usr/local/share/zsh/site-functions/aws_zsh_completer.sh
+    fi
+
+    if [ -f ${config.home.homeDirectory}/.env-extras ]; then
+      source ${config.home.homeDirectory}/.env-extras
     fi
 
     if command -v kubectl 1>/dev/null 2>&1; then
       source <(kubectl completion zsh)
     fi
 
-    if [ -f "/usr/local/share/zsh/site-functions/aws_zsh_completer.sh" ]; then
-      source /usr/local/share/zsh/site-functions/aws_zsh_completer.sh
-    fi
-
     if command -v direnv 1>/dev/null 2>&1; then
-       eval "$(direnv hook zsh)"
+      eval "$(direnv hook zsh)"
     fi
 
-    if command -v pyenv 1>/dev/null 2>&1; then
-      eval "$(pyenv init -)"
+    if [[ -n $VIRTUAL_ENV && -e $VIRTUAL_ENV/bin/activate ]]; then
+      source "$VIRTUAL_ENV/bin/activate"
     fi
-    '' + extraInitExtra;
+    '' + initExtraFunctions;
 
     oh-my-zsh = {
       enable = true;

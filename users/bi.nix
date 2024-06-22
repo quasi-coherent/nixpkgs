@@ -20,11 +20,9 @@ let
   ];
   homeDir = "/Users/danieldonohue";
 in
-rec {
+{
   imports = [
-    ../modules/emacs
-    ../modules/nvim
-    ../modules/zsh
+    ../modules
     ../modules/git/bi.nix
   ];
 

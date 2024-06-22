@@ -1,4 +1,4 @@
-{ config, pkgs, inputs, nur-no-pkgs, ... }:
+{ pkgs, nur-no-pkgs, ... }:
 
 {
   imports = [ nur-no-pkgs.repos.rycee.hmModules.emacs-init ];
@@ -99,9 +99,15 @@
         '';
       };
 
-      git-gutter-fringe = {
+      diff-hl = {
         enable = true;
-        init = "(global-git-gutter-mode 1)";
+        init = "(global-diff-hl-mode)";
+        hook = [ "(magit-pre-refresh . diff-hl-magit-pre-refresh)" ];
+      };
+
+      diff-hl-dired = {
+        enable = true;
+        after = [ "diff-hl-dired" ];
       };
 
       hemisu-theme = {
@@ -141,10 +147,9 @@
       multiple-cursors = {
         enable = true;
         bind = {
-          "C-S-c C-S-c" = "mc/edit-lines";
-          "C-c m" = "mc/mark-all-like-this";
-          "C->" = "mc/mark-next-like-this";
-          "C-<" = "mc/mark-previous-like-this";
+          "C-c m a" = "mc/mark-all-like-this";
+          "C-c m n" = "mc/mark-next-like-this";
+          "C-c m p" = "mc/mark-previous-like-this";
         };
         config = ''
           (setq mc/always-run-for-all 1
@@ -155,11 +160,8 @@
       smartparens = {
         enable = true;
         diminish = [ "smartparens-mode" ];
-        bindLocal.smartparens-mode-map = {
-          "M-<right>" = "sp-forward-sexp";
-          "M-<left>" = "sp-backward-sexp";
-        };
         config = ''
+          (require 'smartparens-config)
           (smartparens-global-mode 1)
           (show-smartparens-global-mode 1)
         '';
@@ -320,17 +322,17 @@
       vertico = {
         enable = true;
         demand = true;
-        bindLocal.vertico-map = {
-          "<return>" = "vertico-directory-enter";
-          "<backspace>" = "vertico-directory-delete-char";
-          "M-<backspace>" = "vertico-directory-delete-word";
-        };
         config = "(vertico-mode)";
       };
 
       vertico-directory = {
         enable = true;
         after = [ "vertico" ];
+        bindLocal.vertico-map = {
+          "<return>" = "vertico-directory-enter";
+          "<backspace>" = "vertico-directory-delete-char";
+          "M-<backspace>" = "vertico-directory-delete-word";
+        };
       };
 
       wgrep = {
@@ -434,7 +436,7 @@
         command = [ "lsp" "lsp-deferred" ];
         hook = [ "(lsp-mode . lsp-enable-which-key-integration)" ];
         init = ''
-          (setq lsp-keymap-prefix "C-l l")
+          (setq lsp-keymap-prefix "C-r l")
         '';
         config = ''
           (setq lsp-diagnostics-provider :flycheck
@@ -443,7 +445,6 @@
                 lsp-eldoc-render-all nil
                 lsp-auto-guess-root nil
                 lsp-prefer-flymake nil
-                lsp-headliner-breadcrumb-enable nil
                 lsp-modeline-code-actions-enable nil
                 lsp-enable-on-type-formatting nil)
         '';
@@ -466,8 +467,8 @@
         command = [ "lsp-ui-mode" ];
         bindLocal = {
           lsp-mode-map = {
-            "C-l l u d" = "lsp-ui-doc-glance";
-            "C-l l u s" = "lsp-ui-find-workspace-symbol";
+            "C-r l u d" = "lsp-ui-doc-glance";
+            "C-r l u s" = "lsp-ui-find-workspace-symbol";
           };
         };
         config = ''
@@ -503,7 +504,7 @@
 
       dockerfile-mode = {
         enable = true;
-        mode = [''("^Dockerfile\\'" . go-mode)''];
+        mode = [''"^Dockerfile\\'"''];
       };
 
       lsp-dockerfile = {
@@ -513,7 +514,7 @@
 
       go-mode = {
         enable = true;
-        mode = [''("\\.go\\'" . go-mode)''];
+        mode = [ ''"\\.go\\'"'' ];
         hook = ["(go-mode . subword-mode)"];
         config = ''
           (setq indent-tabs-mode 1
@@ -525,18 +526,14 @@
         enable = true;
         hook = [
           "(go-mode . lsp-deferred)"
-          "(go-mode 'dmd/lsp-go-install-save-hooks)"
-       ];
-        config = ''
-          (defun dmd/lsp-go-install-save-hooks ()
-             (add-hook 'before-save-hook #'lsp-format-buffer t t)
-             (add-hook 'before-save-hook #'lsp-organize-imports t t))
-        '';
+          "(before-save . lsp-format-buffer)"
+          "(before-save . lsp-organize-imports)"
+        ];
       };
 
       haskell-mode = {
         enable = true;
-        mode = [ ''("\\.hs\\'" . haskell-mode)'' ];
+        mode = [ ''"\\.hs\\'"'' ];
         hook = [ "(haskell-mode . subword-mode)" ];
         config = "(setq tab-width 2)";
       };
@@ -554,7 +551,7 @@
 
       json-mode = {
         enable = true;
-        mode = [ ''("\\.json\\'" . json-mode)'' ];
+        mode = [ ''"\\.json\\'"'' ];
       };
 
       lsp-json = {
@@ -565,14 +562,14 @@
         ];
       };
 
-      lisp-mode = {
+      emacs-lisp-mode = {
         enable = true;
-        mode = [ ''("\\.el\\'" . lisp-mode)'' ];
+        mode = [ ''"\\.el\\'"'' ];
       };
 
       markdown-mode = {
         enable = true;
-        mode = [ ''("\\.md\\'" . markdown-mode)'' ];
+        mode = [ ''"\\.md\\'"'' ];
       };
 
       lsp-marksman = {
@@ -582,17 +579,18 @@
 
       nix-mode = {
         enable = true;
-        mode = [ ''("\\.nix\\'" . nix-mode)'' ];
+        mode = [ ''"\\.nix\\'"'' ];
         hook = [ "(nix-mode . subword-mode)" ];
       };
 
       lsp-nix = {
         enable = true;
         hook = [ "(nix-mode . lsp-deferred)" ];
-        config = ''(setq lsp-nix-nil-formatter ["nixfmt"])'';
+        config = ''(setq lsp-nix-nil-formatter ["nixfmt"]
+                         lsp-nix-nil-auto-eval-inputs nil)'';
       };
 
-      python-mode = {
+      python = {
         enable = true;
         mode = [ ''("\\.py\\'" . python-mode)'' ];
         hook = [ "(python-mode . subword-mode)" ];
@@ -609,7 +607,7 @@
 
       rust-mode = {
         enable = true;
-        mode = [ ''("\\.rs\\'" . rust-mode)'' ];
+        mode = [ ''"\\.rs\\'"'' ];
         hook = [ "(rust-mode . subword-mode)" ];
       };
 
@@ -630,7 +628,7 @@
 
       scala-mode = {
         enable = true;
-        mode = [ ''("\\.scala\\'" . scala-mode)'' ];
+        mode = [ ''"\\.scala\\'"'' ];
         hook = [ "(scala-mode . subword-mode)" ];
       };
 
@@ -663,7 +661,7 @@
 
       terraform-mode = {
         enable = true;
-        mode = [ ''("\\.tf\\'" . terraform-mode)'' ];
+        mode = [ ''"\\.tf\\'"'' ];
         hook = [ "(terraform-mode . subword-mode)" ];
       };
 
@@ -676,7 +674,8 @@
 
       yaml-mode = {
         enable = true;
-        mode = [ ''("\\.yaml\\'" . yaml-mode)'' ];
+        mode = [ ''"\\.yaml\\'"'' ];
+        hook = [ "(yaml-mode . subword-mode)" ];
       };
 
       lsp-yaml = {

@@ -71,7 +71,7 @@
           };
         };
       };
-      devShells.${system}.default = pkgs.mkShell {
+      devShells.x86_64-darwin.default = pkgs.mkShell {
         name = "dev-shell";
         nativeBuildInputs = [ format-all ];
       };

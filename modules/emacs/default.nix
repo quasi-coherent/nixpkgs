@@ -99,17 +99,6 @@
         '';
       };
 
-      diff-hl = {
-        enable = true;
-        init = "(global-diff-hl-mode)";
-        hook = [ "(magit-pre-refresh . diff-hl-magit-pre-refresh)" ];
-      };
-
-      diff-hl-dired = {
-        enable = true;
-        after = [ "diff-hl-dired" ];
-      };
-
       hemisu-theme = {
         enable = true;
         init = "(load-theme 'hemisu-dark 1)";
@@ -123,6 +112,11 @@
           "C-x o" = "ace-window";
         };
         config = "(setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))";
+      };
+
+      git-gutter = {
+        enable = true;
+        init = "(global-git-gutter-mode 1)";
       };
 
       ##### Buffers
@@ -365,7 +359,8 @@
            "C-c C-p" = "projectile-command-map";
          };
          config = ''
-           (setq projectile-enable-caching t
+           (setq projectile-project-root-functions '(projectile-root-local projectile-root-top-down projectile-root-top-down-recurring)
+                 projectile-enable-caching t
                  projectile-switch-project-action #'projectile-dired)
          '';
        };
@@ -406,10 +401,6 @@
         command = [ "global-flycheck-mode" ];
         defer = 1;
         diminish = [ "flycheck-mode" ];
-        bind = {
-          "M-n" = "flycheck-next-error";
-          "M-p" = "flycheck-previous-error";
-        };
         config = ''
           (setq flycheck-check-syntax-automatically '(mode-enabled save))
           (global-flycheck-mode)

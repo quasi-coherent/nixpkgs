@@ -6,6 +6,7 @@ let
     dockerfile-language-server-nodejs
     gopls
     haskell-language-server
+    helm-ls
     jdt-language-server
     nodePackages.vscode-json-languageserver
     marksman

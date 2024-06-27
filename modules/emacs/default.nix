@@ -61,6 +61,8 @@
        user-mail-address "d.michael.donohue@gmail.com"
        use-package-always-ensure 1
        indent-tabs-mode nil
+       read-process-output-max (* 1024 1024)
+       read-extended-command-predicate #'command-completion-default-include-p
       )
 
       (fset 'yes-or-no-p 'y-or-n-p)
@@ -72,8 +74,20 @@
       (global-auto-revert-mode 1)
       (show-paren-mode 1)
 
+      ;; Disable any type of mouse scrolling.
+      (mouse-wheel-mode nil)
+      (global-set-key [wheel-up] 'ignore)
+      (global-set-key [wheel-down] 'ignore)
+      (global-set-key [double-wheel-up] 'ignore)
+      (global-set-key [double-wheel-down] 'ignore)
+      (global-set-key [triple-wheel-up] 'ignore)
+      (global-set-key [triple-wheel-down] 'ignore)
+
       ;; Global hooks
       (add-hook 'before-save-hook 'delete-trailing-whitespace)
+      (add-hook 'minibuffer-setup-hook
+                (lambda ()
+                   (make-local-variable 'kill-ring)))
 
       ;; Functions
       (defun dmd/cleanup-lsp ()
@@ -108,9 +122,7 @@
 
       ace-window = {
         enable = true;
-        bind = {
-          "C-x o" = "ace-window";
-        };
+        bind = { "C-x o" = "ace-window"; };
         config = "(setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))";
       };
 
@@ -123,9 +135,7 @@
 
       avy = {
         enable = true;
-        bind = {
-          "C-c j" = "avy-goto-word-or-subword-1";
-        };
+        bind = { "C-c j" = "avy-goto-word-or-subword-1"; };
         config = "(setq avy-all-windows t)";
       };
 
@@ -166,20 +176,14 @@
       autorevert = {
         enable = true;
         diminish = [ "auto-revert-mode" ];
-        bind = {
-          "C-x R" = "revert-buffer";
-        };
+        bind = { "C-x R" = "revert-buffer"; };
         config = "(global-auto-revert-mode 1)";
       };
 
       dired = {
         enable = true;
         command = [ "dired dired-jump" ];
-        bindLocal = {
-          dired-mode-map = {
-            "C-x C-d" = "#'dired-jump";
-          };
-        };
+        bindLocal = { dired-mode-map = { "C-x C-d" = "#'dired-jump"; }; };
       };
 
       dired-subtree = {
@@ -197,7 +201,7 @@
 
       consult = {
         enable = true;
-        after = [ "vertico "];
+        after = [ "vertico " ];
         bind = {
           "C-s" = "consult-line";
           "C-x b" = "consult-buffer";
@@ -228,10 +232,8 @@
 
       consult-dir = {
         enable = true;
-        after = [ "vertico "];
-        bind = {
-          "C-x C-d" = "consult-dir";
-        };
+        after = [ "vertico " ];
+        bind = { "C-x C-d" = "consult-dir"; };
         bindLocal.vertico-map = {
           "C-x C-d" = "consult-dir";
           "C-x C-j" = "consult-dir-jump-file";
@@ -315,55 +317,51 @@
 
       vertico = {
         enable = true;
-        demand = true;
-        config = "(vertico-mode)";
+        init = "(vertico-mode)";
       };
 
       vertico-directory = {
         enable = true;
         after = [ "vertico" ];
-        bindLocal.vertico-map = {
-          "<return>" = "vertico-directory-enter";
-          "<backspace>" = "vertico-directory-delete-char";
-          "M-<backspace>" = "vertico-directory-delete-word";
-        };
+        extraConfig = ''
+          :bind (:map vertico-map
+                      ("RET" . vertico-directory-enter)
+                      ("DEL" . vertico-directory-delete-char)
+                      ("M-DEL" . vertico-directory-delete-word))
+        '';
       };
 
       wgrep = {
         enable = true;
         after = [ "consult" ];
-        hook = ["(grep-mode . wgrep-setup)"];
+        hook = [ "(grep-mode . wgrep-setup)" ];
       };
 
       ##### Development
 
       envrc = {
         enable = true;
-        hook = ["(after-init . envrc-global-mode)"];
+        hook = [ "(after-init . envrc-global-mode)" ];
       };
 
       magit = {
         enable = true;
         diminish = [ "auto-revert-mode" ];
         command = [ "magit-status" ];
-        bind = {
-          "C-c C-g" = "magit-status";
-        };
+        bind = { "C-c C-g" = "magit-status"; };
       };
 
       projectile = {
-         enable = true;
-         diminish =  [ "projectile-mode" ];
-         init = "(projectile-mode)";
-         bindKeyMap = {
-           "C-c C-p" = "projectile-command-map";
-         };
-         config = ''
-           (setq projectile-project-root-functions '(projectile-root-local projectile-root-top-down projectile-root-top-down-recurring)
-                 projectile-enable-caching t
-                 projectile-switch-project-action #'projectile-dired)
-         '';
-       };
+        enable = true;
+        diminish = [ "projectile-mode" ];
+        init = "(projectile-mode)";
+        bindKeyMap = { "C-c C-p" = "projectile-command-map"; };
+        config = ''
+          (setq projectile-project-root-functions '(projectile-root-local projectile-root-top-down projectile-root-top-down-recurring)
+                projectile-enable-caching t
+                projectile-switch-project-action #'projectile-dired)
+        '';
+      };
 
       ##### LSP
 
@@ -410,10 +408,7 @@
       lsp-completion = {
         enable = true;
         after = [ "lsp-mode" ];
-        config = ''
-          (setq lsp-completion-enable-additional-text-edit nil)
-          (lsp-completion-mode)
-        '';
+        config = "(setq lsp-completion-enable-additional-text-edit nil)";
       };
 
       lsp-diagnostics = {
@@ -490,23 +485,23 @@
 
       lsp-bash = {
         enable = true;
-        hook = ["(sh-mode . lsp-deferred)"];
+        hook = [ "(sh-mode . lsp-deferred)" ];
       };
 
       dockerfile-mode = {
         enable = true;
-        mode = [''"^Dockerfile\\'"''];
+        mode = [ ''"^Dockerfile\\'"'' ];
       };
 
       lsp-dockerfile = {
         enable = true;
-        hook = ["(dockerfile-mode . lsp-deferred)"];
+        hook = [ "(dockerfile-mode . lsp-deferred)" ];
       };
 
       go-mode = {
         enable = true;
         mode = [ ''"\\.go\\'"'' ];
-        hook = ["(go-mode . subword-mode)"];
+        hook = [ "(go-mode . subword-mode)" ];
         config = ''
           (setq indent-tabs-mode 1
                 tab-width 4)
@@ -515,11 +510,11 @@
 
       lsp-go = {
         enable = true;
-        hook = [
-          "(go-mode . lsp-deferred)"
-          "(before-save . lsp-format-buffer)"
-          "(before-save . lsp-organize-imports)"
-        ];
+        hook = [ "(go-mode . lsp-deferred)" ];
+        config = ''
+          (add-hook 'before-save-hook #'lsp-format-buffer nil t)
+          (add-hook 'before-save-hook #'lsp-organize-imports nil t)
+        '';
       };
 
       haskell-mode = {
@@ -536,7 +531,7 @@
 
       lsp-java = {
         enable = true;
-        hook = ["(java-mode . lsp-deferred)"];
+        hook = [ "(java-mode . lsp-deferred)" ];
         config = "(setq lsp-java-save-actions-organize-imports t)";
       };
 
@@ -547,10 +542,10 @@
 
       lsp-json = {
         enable = true;
-        hook = [
-          "(json-mode . lsp-deferred)"
-          "(before-save . json-pretty-print-buffer)"
-        ];
+        hook = [ "(json-mode . lsp-deferred)" ];
+        config = ''
+          (add-hook 'before-save-hook 'json-pretty-print-buffer nil t)
+        '';
       };
 
       emacs-lisp-mode = {
@@ -577,8 +572,9 @@
       lsp-nix = {
         enable = true;
         hook = [ "(nix-mode . lsp-deferred)" ];
-        config = ''(setq lsp-nix-nil-formatter ["nixfmt"]
-                         lsp-nix-nil-auto-eval-inputs nil)'';
+        config = ''
+          (setq lsp-nix-nil-formatter ["nixfmt"]
+                                   lsp-nix-nil-auto-eval-inputs nil)'';
       };
 
       python = {
@@ -607,7 +603,6 @@
         hook = [ "(rust-mode . lsp-deferred)" ];
         config = ''
           (setq lsp-rust-analyzer-proc-macro-enable t
-                rustic-cargo-fmt t
                 rustic-format-trigger 'on-save
                 rustic-format-display-method 'ignore)
         '';
@@ -643,10 +638,7 @@
 
       lsp-sqls = {
         enable = true;
-        hook = [
-          "(sql-mode . lsp-deferred)"
-          "(sql-mode . subword-mode)"
-        ];
+        hook = [ "(sql-mode . lsp-deferred)" "(sql-mode . subword-mode)" ];
         config = "(setq lsp-sqls-workspace-config-path nil)";
       };
 
@@ -697,7 +689,10 @@
 
       which-key = {
         enable = true;
-        command = [ "which-key-mode" "which-key-add-major-mode-key-based-replacements" ];
+        command = [
+          "which-key-mode"
+          "which-key-add-major-mode-key-based-replacements"
+        ];
         diminish = [ "which-key-mode" ];
         config = "(which-key-mode)";
       };

@@ -7,25 +7,20 @@
   programs.emacs.init = {
     enable = true;
     recommendedGcSettings = true;
+    usePackageVerbose = false;
 
     earlyInit = ''
       ;; Disable GUI distractions
       (push '(menu-bar-lines . 0) default-frame-alist)
       (push '(tool-bar-lines . nil) default-frame-alist)
       (push '(vertical-scroll-bars . nil) default-frame-alist)
+      ;; https://emacs-lsp.github.io/lsp-mode/page/performance/#use-plists-for-deserialization
+      (setenv "LSP_USE_PLISTS" "true")
     '';
 
     prelude = ''
       (put 'minibuffer-history 'history-length 100)
       (put 'kill-ring 'history-length 25)
-
-      ;; Global key bindings
-      (global-set-key (kbd "C-x C-b") 'ibuffer)
-      (global-set-key (kbd "C-<return>") 'toggle-frame-fullscreen)
-      (global-set-key (kbd "C-<backspace>") (lambda ()
-                      (interactive)
-                      (kill-line 0)
-                      (indent-according-to-mode)))
 
       (setq user-full-name "Daniel Donohue"
             user-login-name "Daniel Donohue"
@@ -43,6 +38,7 @@
        history-length 100
        ad-redefinition-action 'accept
        cursor-in-non-selected-windows nil
+       mouse-wheel-mode 0
        display-time-default-load-average nil
        fill-column 80
        show-trailing-whitespace 1
@@ -65,8 +61,48 @@
        read-extended-command-predicate #'command-completion-default-include-p
       )
 
-      (fset 'yes-or-no-p 'y-or-n-p)
+      ;; Functions
+      (defun dmd/cleanup-lsp ()
+        "Remove all existing workspace folders from LSP."
+        (interactive)
+        (let ((folders (lsp-session-folders (lsp-session))))
+          (while folders
+            (lsp-workspace-folders-remove (car folders))
+            (setq folders (cdr folders)))))
 
+      (defun dmd/lsp-booster--advice-json-parse (old-fn &rest args)
+        "Try to parse bytecode instead of json."
+        (or
+         (when (equal (following-char) ?#)
+           (let ((bytecode (read (current-buffer))))
+             (when (byte-code-function-p bytecode)
+               (funcall bytecode))))
+         (apply old-fn args)))
+
+      (advice-add (if (progn (require 'json)
+                             (fboundp 'json-parse-buffer))
+                      'json-parse-buffer
+                    'json-read)
+                  :around
+                  #'lsp-booster--advice-json-parse)
+
+      (defun dmd/lsp-booster--advice-final-command (old-fn cmd &optional test?)
+        "Prepend emacs-lsp-booster command to lsp CMD."
+        (let ((orig-result (funcall old-fn cmd test?)))
+          (if (and (not test?)                             ;; for check lsp-server-present?
+                   (not (file-remote-p default-directory)) ;; see lsp-resolve-final-command, it would add extra shell wrapper
+                   lsp-use-plists
+                   (not (functionp 'json-rpc-connection))  ;; native json-rpc
+                   (executable-find "emacs-lsp-booster"))
+              (progn
+                (message "Using emacs-lsp-booster for %s!" orig-result)
+                (cons "emacs-lsp-booster" orig-result))
+            orig-result)))
+
+      (advice-add 'lsp-resolve-final-command :around #'lsp-booster--advice-final-command)
+
+      ;; Global settings/modes
+      (fset 'yes-or-no-p 'y-or-n-p)
       (global-display-line-numbers-mode 1)
       (global-hl-line-mode 1)
       (column-number-mode 1)
@@ -74,29 +110,18 @@
       (global-auto-revert-mode 1)
       (show-paren-mode 1)
 
-      ;; Disable any type of mouse scrolling.
-      (mouse-wheel-mode nil)
-      (global-set-key [wheel-up] 'ignore)
-      (global-set-key [wheel-down] 'ignore)
-      (global-set-key [double-wheel-up] 'ignore)
-      (global-set-key [double-wheel-down] 'ignore)
-      (global-set-key [triple-wheel-up] 'ignore)
-      (global-set-key [triple-wheel-down] 'ignore)
-
-      ;; Global hooks
       (add-hook 'before-save-hook 'delete-trailing-whitespace)
       (add-hook 'minibuffer-setup-hook
                 (lambda ()
-                   (make-local-variable 'kill-ring)))
+                  (make-local-variable 'kill-ring)))
 
-      ;; Functions
-      (defun dmd/cleanup-lsp ()
-        "Remove all the workspace folders from LSP"
-        (interactive)
-        (let ((folders (lsp-session-folders (lsp-session))))
-          (while folders
-            (lsp-workspace-folders-remove (car folders))
-            (setq folders (cdr folders)))))
+      (global-set-key (kbd "C-x C-b") 'ibuffer)
+      (global-set-key (kbd "C-<return>") 'toggle-frame-fullscreen)
+      (global-set-key (kbd "C-<backspace>")
+                      (lambda ()
+                        (interactive)
+                        (kill-line 0)
+                        (indent-according-to-mode)))
     '';
 
     usePackage = {
@@ -318,6 +343,10 @@
       vertico = {
         enable = true;
         init = "(vertico-mode)";
+        extraConfig = ''
+          :custom
+          (vertico-cycle t)
+        '';
       };
 
       vertico-directory = {
@@ -475,6 +504,11 @@
         after = [ "flycheck" "lsp-ui" ];
       };
 
+      savehist = {
+        enable = true;
+        init = "(savehist-mode)";
+      };
+
       yasnippet = {
         enable = true;
         command = [ "yas-global-mode" "yas-minor-mode" "yas-expand-snippet" ];
@@ -498,6 +532,11 @@
         hook = [ "(dockerfile-mode . lsp-deferred)" ];
       };
 
+      elisp-mode = {
+        enable = true;
+        mode = [ ''"\\.el\\'"'' ];
+      };
+
       go-mode = {
         enable = true;
         mode = [ ''"\\.go\\'"'' ];
@@ -512,8 +551,10 @@
         enable = true;
         hook = [ "(go-mode . lsp-deferred)" ];
         config = ''
-          (add-hook 'before-save-hook #'lsp-format-buffer nil t)
-          (add-hook 'before-save-hook #'lsp-organize-imports nil t)
+          (add-hook 'go-mode
+                    (lambda ()
+                      (add-hook 'before-save-hook #'lsp-format-buffer t t)
+                      (add-hook 'before-save-hook #'lsp-organize-imports t t)))
         '';
       };
 
@@ -544,13 +585,10 @@
         enable = true;
         hook = [ "(json-mode . lsp-deferred)" ];
         config = ''
-          (add-hook 'before-save-hook 'json-pretty-print-buffer nil t)
+          (add-hook 'json-mode
+                    (lambda ()
+                      (add-hook 'before-save-hook 'json-pretty-print-buffer t t)))
         '';
-      };
-
-      emacs-lisp-mode = {
-        enable = true;
-        mode = [ ''"\\.el\\'"'' ];
       };
 
       markdown-mode = {
@@ -638,7 +676,10 @@
 
       lsp-sqls = {
         enable = true;
-        hook = [ "(sql-mode . lsp-deferred)" "(sql-mode . subword-mode)" ];
+        hook = [
+          "(sql-mode . lsp-deferred)"
+          "(sql-mode . subword-mode)"
+        ];
         config = "(setq lsp-sqls-workspace-config-path nil)";
       };
 

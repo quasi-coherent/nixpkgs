@@ -47,6 +47,7 @@ in
     duf
     du-dust
     eksctl
+    emacs-lsp-booster
     exiftool
     eza
     fd

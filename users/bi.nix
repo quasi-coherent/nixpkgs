@@ -12,7 +12,7 @@ let
     marksman
     nil
     pyright
-    rust-analyzer
+    nixpkgs-unstable.rust-analyzer
     metals
     sqls
     terraform-ls
@@ -34,6 +34,7 @@ in
   home.packages = with pkgs; [
     awscli2
     awslogs
+    aws-vault
     bat
     bc
     cachix
@@ -74,7 +75,7 @@ in
     lnav
     lua
     moreutils
-    nodejs
+    nodejs_20
     openssh
     openssl
     parquet-tools
@@ -88,8 +89,10 @@ in
     terraform
     terraform-ls
     tflint
+    nodePackages.typescript
     wget
-    youtube-dl
+    xmlsec
+    yt-dlp
     yq
   ] ++ inputs.darwin-frameworks ++ lsps;
 

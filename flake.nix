@@ -50,7 +50,7 @@
           check=""
         fi
 
-        PATH =${with pkgs; nixpkgs.lib.makeBinPath [ nixfmt ]}
+        PATH=${with pkgs; nixpkgs.lib.makeBinPath [ nixfmt ]}
 
         nixfmt $check **/*.nix
       '';

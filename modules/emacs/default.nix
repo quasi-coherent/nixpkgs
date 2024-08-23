@@ -14,8 +14,6 @@
       (push '(menu-bar-lines . 0) default-frame-alist)
       (push '(tool-bar-lines . nil) default-frame-alist)
       (push '(vertical-scroll-bars . nil) default-frame-alist)
-      ;; https://emacs-lsp.github.io/lsp-mode/page/performance/#use-plists-for-deserialization
-      (setenv "LSP_USE_PLISTS" "true")
     '';
 
     prelude = ''
@@ -69,37 +67,6 @@
           (while folders
             (lsp-workspace-folders-remove (car folders))
             (setq folders (cdr folders)))))
-
-      (defun dmd/lsp-booster--advice-json-parse (old-fn &rest args)
-        "Try to parse bytecode instead of json."
-        (or
-         (when (equal (following-char) ?#)
-           (let ((bytecode (read (current-buffer))))
-             (when (byte-code-function-p bytecode)
-               (funcall bytecode))))
-         (apply old-fn args)))
-
-      (advice-add (if (progn (require 'json)
-                             (fboundp 'json-parse-buffer))
-                      'json-parse-buffer
-                    'json-read)
-                  :around
-                  #'lsp-booster--advice-json-parse)
-
-      (defun dmd/lsp-booster--advice-final-command (old-fn cmd &optional test?)
-        "Prepend emacs-lsp-booster command to lsp CMD."
-        (let ((orig-result (funcall old-fn cmd test?)))
-          (if (and (not test?)                             ;; for check lsp-server-present?
-                   (not (file-remote-p default-directory)) ;; see lsp-resolve-final-command, it would add extra shell wrapper
-                   lsp-use-plists
-                   (not (functionp 'json-rpc-connection))  ;; native json-rpc
-                   (executable-find "emacs-lsp-booster"))
-              (progn
-                (message "Using emacs-lsp-booster for %s!" orig-result)
-                (cons "emacs-lsp-booster" orig-result))
-            orig-result)))
-
-      (advice-add 'lsp-resolve-final-command :around #'lsp-booster--advice-final-command)
 
       ;; Global settings/modes
       (fset 'yes-or-no-p 'y-or-n-p)
@@ -290,12 +257,12 @@
                       ([remap complete-symbol] . company-complete-common))
         '';
         config = ''
-          (setq company-idle-delay 0.3
+          (setq company-dabbrev-downcase nil
+                company-idle-delay 0.3
+                company-require-match nil
                 company-show-quick-access t
                 company-tooltip-maximum-width 100
-                company-tooltip-minimum-width 20
-                company-require-match nil)
-
+                company-tooltip-minimum-width 20)
           (global-company-mode)
         '';
       };
@@ -454,6 +421,7 @@
           (setq lsp-keymap-prefix "C-r l")
         '';
         config = ''
+          (define-key lsp-mode-map (kbd "C-r l") lsp-command-map)
           (setq lsp-diagnostics-provider :flycheck
                 lsp-modeline-diagnostics-scope :workspace
                 lsp-lens-enable t
@@ -605,6 +573,10 @@
         enable = true;
         mode = [ ''"\\.nix\\'"'' ];
         hook = [ "(nix-mode . subword-mode)" ];
+        config = ''
+          (setq tab-width 2
+                nix-mode-use-smie 1)
+        '';
       };
 
       lsp-nix = {
@@ -689,11 +661,19 @@
         hook = [ "(terraform-mode . subword-mode)" ];
       };
 
+      lsp-elint = {
+        enable = true;
+        hook = ["(typescript-mode . lsp-deferred)"];
+      };
+
       typescript-mode = {
         enable = true;
-        mode = [ ''("\\.tsx?$" . typescript-mode)'' ];
+        mode = [ ''("\\.ts$\\'" . typescript-mode)'' ];
         hook = [ "(typescript-mode . lsp-deferred)" ];
-        config = "(setq typescript-indent-level 2)";
+        config = ''
+          (setq typescript-indent-level 2)
+          (setq typescript-auto-indent-flag t)
+        '';
       };
 
       yaml-mode = {

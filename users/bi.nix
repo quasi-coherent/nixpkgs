@@ -38,7 +38,6 @@ in
     bat
     bc
     cachix
-    cargo-flamegraph
     cloc
     coreutils
     difftastic
@@ -54,7 +53,6 @@ in
     fd
     feh
     ffmpeg
-    flamegraph
     fzf
     google-cloud-sdk
     git-filter-repo
@@ -74,6 +72,7 @@ in
     lf
     lnav
     lua
+    measureme
     moreutils
     nodejs_20
     openssh
@@ -84,8 +83,8 @@ in
     sd
     steampipe
     stern
-    sqlx-cli
     tree
+    tree-sitter
     terraform
     terraform-ls
     tflint

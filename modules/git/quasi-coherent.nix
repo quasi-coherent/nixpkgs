@@ -14,6 +14,7 @@
     };
 
     signing = {
+      key = "C8E38F6173FB74D2C415C98D1FE02CFE20E556EF";
       signByDefault = true;
     };
   };

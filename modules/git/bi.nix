@@ -12,6 +12,7 @@
       pull.rebase = true;
       http.postBuffer = 1048576000;
       credential.helper = "store";
+      tag.gpgSign = true;
     };
 
     signing = {

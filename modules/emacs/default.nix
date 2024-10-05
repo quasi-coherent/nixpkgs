@@ -4,6 +4,9 @@
   imports = [ nur-no-pkgs.repos.rycee.hmModules.emacs-init ];
 
   programs.emacs.package = pkgs.emacs;
+  programs.emacs.extraPackages = epkgs: [
+      epkgs.treesit-grammars.with-all-grammars
+  ];
   programs.emacs.init = {
     enable = true;
     recommendedGcSettings = true;
@@ -55,12 +58,11 @@
        user-mail-address "d.michael.donohue@gmail.com"
        use-package-always-ensure 1
        indent-tabs-mode nil
-       read-process-output-max (* 1024 1024)
        read-extended-command-predicate #'command-completion-default-include-p
       )
 
       ;; Functions
-      (defun dmd/cleanup-lsp ()
+      (defun dmd/destroy-lsp ()
         "Remove all existing workspace folders from LSP."
         (interactive)
         (let ((folders (lsp-session-folders (lsp-session))))
@@ -257,8 +259,8 @@
                       ([remap complete-symbol] . company-complete-common))
         '';
         config = ''
-          (setq company-dabbrev-downcase nil
-                company-idle-delay 0.3
+          (setq company-minimum-prefix-length 1
+                company-idle-delay 0.0
                 company-require-match nil
                 company-show-quick-access t
                 company-tooltip-maximum-width 100
@@ -375,6 +377,12 @@
         '';
       };
 
+      consult-flycheck = {
+        enable = true;
+        after = [ "consult" "flycheck" ];
+        command = [ "consult-flycheck" ];
+      };
+
       consult-xref = {
         enable = true;
         after = [ "consult" "xref" ];
@@ -392,8 +400,8 @@
 
       flycheck = {
         enable = true;
-        command = [ "global-flycheck-mode" ];
-        defer = 1;
+        init = "(global-flycheck-mode)";
+        defer = 2;
         diminish = [ "flycheck-mode" ];
         config = ''
           (setq flycheck-check-syntax-automatically '(mode-enabled save))
@@ -423,20 +431,17 @@
         config = ''
           (define-key lsp-mode-map (kbd "C-r l") lsp-command-map)
           (setq lsp-diagnostics-provider :flycheck
+                lsp-modeline-diagnostics-enable t
                 lsp-modeline-diagnostics-scope :workspace
-                lsp-lens-enable t
+                lsp-idle-delay 0.6
+                read-process-output-max (* 6 1024 1024) ;; 6mb
+                gc-cons-threshold (* 100 1024 1024)
                 lsp-eldoc-render-all nil
                 lsp-auto-guess-root nil
                 lsp-prefer-flymake nil
                 lsp-modeline-code-actions-enable nil
                 lsp-enable-on-type-formatting nil)
         '';
-      };
-
-      lsp-lens = {
-        enable = true;
-        after = [ "lsp-mode" ];
-        command = [ "lsp-lens--enable" ];
       };
 
       lsp-modeline = {
@@ -459,7 +464,10 @@
                 lsp-ui-sideline-show-symbol nil
                 lsp-ui-sideline-show-hover nil
                 lsp-ui-sideline-show-code-actions nil
-                lsp-ui-sideline-update-mode 'point
+                lsp-ui-sideline-update-mode 'line
+                lsp-ui-sideline-diagnostic-max-line-length 50
+                lsp-ui-sideline-diagnostic-max-lines 5
+                lsp-ui-sideline-delay 0.6
                 lsp-ui-doc-enable nil
                 lsp-ui-doc-position 'at-point
                 lsp-ui-doc-max-width 120
@@ -498,11 +506,6 @@
       lsp-dockerfile = {
         enable = true;
         hook = [ "(dockerfile-mode . lsp-deferred)" ];
-      };
-
-      elisp-mode = {
-        enable = true;
-        mode = [ ''"\\.el\\'"'' ];
       };
 
       go-mode = {
@@ -587,6 +590,12 @@
                                    lsp-nix-nil-auto-eval-inputs nil)'';
       };
 
+      protobuf-mode = {
+        enable = true;
+        mode = [ ''"\\.proto\\'"'' ];
+        hook = [ "(protobuf-mode . subword-mode)" ];
+      };
+
       python = {
         enable = true;
         mode = [ ''("\\.py\\'" . python-mode)'' ];
@@ -604,21 +613,26 @@
 
       rust-mode = {
         enable = true;
+        # init = "(setq rust-mode-treesitter-derive t)";
         mode = [ ''"\\.rs\\'"'' ];
         hook = [ "(rust-mode . subword-mode)" ];
+
       };
 
       rustic = {
         enable = true;
-        hook = [ "(rust-mode . lsp-deferred)" ];
+        hook = ["(rust-mode . lsp-deferred)"];
         config = ''
           (setq lsp-rust-analyzer-proc-macro-enable t
+                lsp-rust-analyzer-cargo-extra-args ["--all-features"]
+                lsp-rust-analyzer-cargo-watch-enable t
+                lsp-rust-analyzer-cargo-watch-command "check"
+                rustic-cargo-build-arguments "--all-features"
+                rustic-cargo-check-arguments "--all-features"
+                rustic-clippy-arguments "--all-features -- -Dwarnings"
                 rustic-format-trigger 'on-save
-                rustic-format-display-method 'ignore)
-        '';
-        extraConfig = ''
-          :custom
-          (rustic-rustfmt-config-alist '((edition . "2021")))
+                rustic-format-display-method 'ignore
+                rustic-rustfmt-args "--edition 2021")
         '';
       };
 
@@ -642,7 +656,7 @@
         hook = [ "(sql-mode . sqlformat-on-save-mode)" ];
         config = ''
           (setq sqlformat-command 'pgformatter
-                sqlformat-args '("-s2" "-g"))
+                sqlformat-args '("-C" "-f1" "-L" "-m100" "-s2" "-t" "-w100" "-W100"))
         '';
       };
 
@@ -661,11 +675,6 @@
         hook = [ "(terraform-mode . subword-mode)" ];
       };
 
-      lsp-elint = {
-        enable = true;
-        hook = ["(typescript-mode . lsp-deferred)"];
-      };
-
       typescript-mode = {
         enable = true;
         mode = [ ''("\\.ts$\\'" . typescript-mode)'' ];
@@ -674,6 +683,11 @@
           (setq typescript-indent-level 2)
           (setq typescript-auto-indent-flag t)
         '';
+      };
+
+      elint = {
+        enable = true;
+        hook = ["(typescript-mode . lsp-deferred)"];
       };
 
       yaml-mode = {

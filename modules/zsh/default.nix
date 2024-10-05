@@ -12,10 +12,30 @@ let
     nuke-all = "nix-collect-garbage -d && docker system prune --volumes --force";
     fzf = "fzf --height 50% --border";
     gcm = "git checkout master 2>/dev/null || git checkout main";
+    ls = "eza";
+    l = "eza --git-ignore";
+    ll = "eza --all --header --long";
+    llm = "eza --all --header --long --sort-modified";
+    la = "eza -lbhHigUmuSa";
+    lx = "eza -lbhHigUmuSa@";
+    lt = "eza --tree";
+    tree = "eza --tree";
   };
 
 in
 {
+  programs.eza = {
+    enable = true;
+    enableZshIntegration = true;
+    extraOptions = [
+      "--git"
+      "--group"
+      "--group-directories-first"
+      "--time-style=long-iso"
+      "--color-scale=all"
+    ];
+  };
+
   programs.zsh = {
     inherit shellAliases;
 

@@ -75,6 +75,7 @@
       (global-display-line-numbers-mode 1)
       (global-hl-line-mode 1)
       (column-number-mode 1)
+      (winner-mode 1)
       (delete-selection-mode 1)
       (global-auto-revert-mode 1)
       (show-paren-mode 1)
@@ -624,12 +625,8 @@
         hook = ["(rust-mode . lsp-deferred)"];
         config = ''
           (setq lsp-rust-analyzer-proc-macro-enable t
-                lsp-rust-analyzer-cargo-extra-args ["--all-features"]
                 lsp-rust-analyzer-cargo-watch-enable t
                 lsp-rust-analyzer-cargo-watch-command "check"
-                rustic-cargo-build-arguments "--all-features"
-                rustic-cargo-check-arguments "--all-features"
-                rustic-clippy-arguments "--all-features -- -Dwarnings"
                 rustic-format-trigger 'on-save
                 rustic-format-display-method 'ignore
                 rustic-rustfmt-args "--edition 2021")
@@ -656,7 +653,7 @@
         hook = [ "(sql-mode . sqlformat-on-save-mode)" ];
         config = ''
           (setq sqlformat-command 'pgformatter
-                sqlformat-args '("-C" "-f1" "-L" "-m100" "-s2" "-t" "-w100" "-W100"))
+                sqlformat-args '("-C" "-f1" "-L" "-s2" "-w90" "-t" "-g" "--no-space-function"))
         '';
       };
 

@@ -227,7 +227,7 @@
 
       consult-dir = {
         enable = true;
-        after = [ "vertico " ];
+        after = [ "vertico" ];
         bind = { "C-x C-d" = "consult-dir"; };
         bindLocal.vertico-map = {
           "C-x C-d" = "consult-dir";
@@ -653,7 +653,7 @@
         hook = [ "(sql-mode . sqlformat-on-save-mode)" ];
         config = ''
           (setq sqlformat-command 'pgformatter
-                sqlformat-args '("-C" "-f1" "-L" "-s2" "-w90" "-t" "-g" "--no-space-function"))
+                sqlformat-args '("-f1" "-L" "-s2" "-w90" "-t" "-g" "--no-space-function"))
         '';
       };
 
@@ -696,7 +696,10 @@
       lsp-yaml = {
         enable = true;
         hook = [ "(yaml-mode . lsp-deferred)" ];
-        config = "(setq lsp-yaml-completion t)";
+        config = ''
+          (setq lsp-yaml-completion t)
+          (setq lsp-yaml-custom-tags ["!reference"])
+        '';
       };
 
       ##### Tools

@@ -59,7 +59,7 @@
         "dmd@bi" = home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
           modules = [
-            nur.hmModules.nur
+            nur.modules.homeManager.default
             ./users/bi.nix
           ];
           extraSpecialArgs = {

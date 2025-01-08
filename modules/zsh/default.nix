@@ -12,6 +12,7 @@ let
     nuke-all = "nix-collect-garbage -d && docker system prune --volumes --force";
     fzf = "fzf --height 50% --border";
     gcm = "git checkout master 2>/dev/null || git checkout main";
+    cdd = "cd $ZEROPW";
     ls = "eza";
     l = "eza --git-ignore";
     ll = "eza --all --header --long";

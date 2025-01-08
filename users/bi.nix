@@ -100,6 +100,7 @@ in
   in {
     EDITOR = "vim";
     JAVA_HOME = "/Library/Java/JavaVirtualMachines/openjdk-11.jdk/Contents/Home/";
+    CARGO_HOME = "${homeDir}/.cargo";
     GOPATH = "${homeDir}/go";
     ZEROPW = "${ZEROPW}";
     PROJECT_DIR = "${ZEROPW}";

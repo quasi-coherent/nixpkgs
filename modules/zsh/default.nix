@@ -47,6 +47,8 @@ in
     defaultKeymap = "emacs";
     enableCompletion = true;
     history.extended = true;
+    history.save = 100000;
+    history.size = 100000;
 
     initExtra = ''
     export TERM="xterm-256color"

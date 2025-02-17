@@ -4,9 +4,8 @@
   imports = [ nur-no-pkgs.repos.rycee.hmModules.emacs-init ];
 
   programs.emacs.package = pkgs.emacs;
-  programs.emacs.extraPackages = epkgs: [
-      epkgs.treesit-grammars.with-all-grammars
-  ];
+  programs.emacs.extraPackages = epkgs:
+    [ epkgs.treesit-grammars.with-all-grammars ];
   programs.emacs.init = {
     enable = true;
     recommendedGcSettings = true;
@@ -147,8 +146,13 @@
         enable = true;
         bind = {
           "C-c m a" = "mc/mark-all-like-this";
+          "C-c m r" = "mc/mark-all-in-region";
           "C-c m n" = "mc/mark-next-like-this";
           "C-c m p" = "mc/mark-previous-like-this";
+          "C-c u n" = "mc/unmark-next-like-this";
+          "C-c u p" = "mc/unmark-previous-like-this";
+          "C-c s n" = "mc/skip-to-next-like-this";
+          "C-c s p" = "mc/skip-to-previous-like-this";
         };
         config = ''
           (setq mc/always-run-for-all 1
@@ -427,10 +431,10 @@
         command = [ "lsp" "lsp-deferred" ];
         hook = [ "(lsp-mode . lsp-enable-which-key-integration)" ];
         init = ''
-          (setq lsp-keymap-prefix "C-r l")
+          (setq lsp-keymap-prefix "C-c C-l")
         '';
         config = ''
-          (define-key lsp-mode-map (kbd "C-r l") lsp-command-map)
+          (define-key lsp-mode-map (kbd "C-c C-l") lsp-command-map)
           (setq lsp-diagnostics-provider :flycheck
                 lsp-modeline-diagnostics-enable t
                 lsp-modeline-diagnostics-scope :workspace
@@ -456,8 +460,8 @@
         command = [ "lsp-ui-mode" ];
         bindLocal = {
           lsp-mode-map = {
-            "C-r l u d" = "lsp-ui-doc-glance";
-            "C-r l u s" = "lsp-ui-find-workspace-symbol";
+            "C-c C-l u d" = "lsp-ui-doc-glance";
+            "C-c C-l u s" = "lsp-ui-find-workspace-symbol";
           };
         };
         config = ''
@@ -497,6 +501,15 @@
       lsp-bash = {
         enable = true;
         hook = [ "(sh-mode . lsp-deferred)" ];
+      };
+
+      dhall-mode = {
+        enable = true;
+        hook = [ "(dhall-mode . lsp-deferred)" ];
+        config = ''
+          (setq dhall-format-arguments (\' ("--ascii"))
+                dhall-use-header-line nil)
+        '';
       };
 
       dockerfile-mode = {
@@ -622,7 +635,7 @@
 
       rustic = {
         enable = true;
-        hook = ["(rust-mode . lsp-deferred)"];
+        hook = [ "(rust-mode . lsp-deferred)" ];
         config = ''
           (setq lsp-rust-analyzer-proc-macro-enable t
                 lsp-rust-analyzer-cargo-watch-enable t
@@ -657,14 +670,7 @@
         '';
       };
 
-      lsp-sqls = {
-        enable = true;
-        hook = [
-          "(sql-mode . lsp-deferred)"
-          "(sql-mode . subword-mode)"
-        ];
-        config = "(setq lsp-sqls-workspace-config-path nil)";
-      };
+      lsp-sqls.enable = true;
 
       terraform-mode = {
         enable = true;
@@ -684,7 +690,7 @@
 
       elint = {
         enable = true;
-        hook = ["(typescript-mode . lsp-deferred)"];
+        hook = [ "(typescript-mode . lsp-deferred)" ];
       };
 
       yaml-mode = {

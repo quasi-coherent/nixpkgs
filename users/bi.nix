@@ -3,6 +3,7 @@
 let
   lsps = with pkgs; [
     nodePackages.bash-language-server
+    dhall-lsp-server
     dockerfile-language-server-nodejs
     gopls
     haskell-language-server
@@ -40,6 +41,9 @@ in
     cachix
     cloc
     coreutils
+    dhall
+    dhall-yaml
+    dhall-json
     difftastic
     direnv
     dive
@@ -70,7 +74,7 @@ in
     kubectx
     kubernetes-helm
     lf
-    lnav
+    # lnav
     lua
     measureme
     moreutils
@@ -79,6 +83,7 @@ in
     openssl
     parquet-tools
     pgformatter
+    rainfrog
     ripgrep
     sd
     steampipe

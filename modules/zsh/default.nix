@@ -2,10 +2,11 @@
 
 let
   functions = [
-    ./functions/cargo-clean-all.zsh
-    ./functions/emacs.zsh
-    ./functions/extract.zsh
-    ./functions/json-pretty.zsh
+    ./functions/cargo-clean-all
+    ./functions/colors
+    ./functions/emacs
+    ./functions/extract
+    ./functions/json-pretty
   ];
   initExtraFunctions = builtins.foldl' (acc: f: acc + "\n" + builtins.readFile f) "" functions;
   shellAliases = {
@@ -21,6 +22,7 @@ let
     lx = "eza -lbhHigUmuSa@";
     lt = "eza --tree";
     tree = "eza --tree";
+    k = "kubectl";
   };
 
 in
@@ -41,52 +43,15 @@ in
     inherit shellAliases;
 
     enable = true;
-
     autocd = true;
     autosuggestion.enable = true;
     defaultKeymap = "emacs";
     enableCompletion = true;
     history.extended = true;
+    history.share = true;
+    history.ignoreSpace = true;
     history.save = 100000;
     history.size = 100000;
-
-    initExtra = ''
-    export TERM="xterm-256color"
-
-    bindkey -e
-
-    if [ -f ${config.home.homeDirectory}/.nix-profile/etc/profile.d/nix.sh ]; then
-      source ${config.home.homeDirectory}/.nix-profile/etc/profile.d/nix.sh
-    fi
-
-    if [ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then
-      source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
-    fi
-
-    if [ -f ${config.home.homeDirectory}/.nix-profile/etc/profile.d/hm-session-vars.sh ]; then
-      source ${config.home.homeDirectory}/.nix-profile/etc/profile.d/hm-session-vars.sh
-    fi
-
-    if [ -f /usr/local/share/zsh/site-functions/aws_zsh_completer.sh ]; then
-      source /usr/local/share/zsh/site-functions/aws_zsh_completer.sh
-    fi
-
-    if [ -f ${config.home.homeDirectory}/.env-extras ]; then
-      source ${config.home.homeDirectory}/.env-extras
-    fi
-
-    if command -v kubectl 1>/dev/null 2>&1; then
-      source <(kubectl completion zsh)
-    fi
-
-    if command -v direnv 1>/dev/null 2>&1; then
-      eval "$(direnv hook zsh)"
-    fi
-
-    if [[ -n $VIRTUAL_ENV && -e $VIRTUAL_ENV/bin/activate ]]; then
-      source "$VIRTUAL_ENV/bin/activate"
-    fi
-    '' + initExtraFunctions;
 
     oh-my-zsh = {
       enable = true;
@@ -96,5 +61,43 @@ in
         "ssh-agent"
       ];
     };
+
+    initExtra = ''
+export TERM="xterm-256color"
+
+bindkey -e
+
+if [ -f ${config.home.homeDirectory}/.nix-profile/etc/profile.d/nix.sh ]; then
+  source ${config.home.homeDirectory}/.nix-profile/etc/profile.d/nix.sh
+fi
+
+if [ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then
+  source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+fi
+
+if [ -f ${config.home.homeDirectory}/.nix-profile/etc/profile.d/hm-session-vars.sh ]; then
+  source ${config.home.homeDirectory}/.nix-profile/etc/profile.d/hm-session-vars.sh
+fi
+
+if [ -f /usr/local/share/zsh/site-functions/aws_zsh_completer.sh ]; then
+  source /usr/local/share/zsh/site-functions/aws_zsh_completer.sh
+fi
+
+if [ -f ${config.home.homeDirectory}/.env-extras ]; then
+  source ${config.home.homeDirectory}/.env-extras
+fi
+
+if command -v kubectl 1>/dev/null 2>&1; then
+  source <(kubectl completion zsh)
+fi
+
+if command -v direnv 1>/dev/null 2>&1; then
+  eval "$(direnv hook zsh)"
+fi
+
+if [[ -n $VIRTUAL_ENV && -e $VIRTUAL_ENV/bin/activate ]]; then
+  source "$VIRTUAL_ENV/bin/activate"
+fi
+    '' + initExtraFunctions;
   };
 }

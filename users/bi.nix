@@ -30,7 +30,7 @@ in
 
   home.username = "danieldonohue";
   home.homeDirectory = homeDir;
-  home.stateVersion = "24.05";
+  home.stateVersion = "24.11";
 
   home.packages = with pkgs; [
     awscli2
@@ -41,6 +41,7 @@ in
     cachix
     cloc
     coreutils
+    coreutils-prefixed
     dhall
     dhall-yaml
     dhall-json
@@ -50,6 +51,7 @@ in
     doggo
     duf
     du-dust
+    dune_3
     eksctl
     emacs-lsp-booster
     exiftool
@@ -74,17 +76,19 @@ in
     kubectx
     kubernetes-helm
     lf
-    # lnav
     lua
     measureme
     moreutils
     nodejs_20
+    ocamlformat_0_26_1
+    opam
     openssh
     openssl
     parquet-tools
     pgformatter
     rainfrog
     ripgrep
+    ocamlPackages.rtop
     sd
     steampipe
     stern
@@ -93,11 +97,13 @@ in
     terraform
     terraform-ls
     tflint
+    ocamlPackages.utop
     nodePackages.typescript
     wget
     xmlsec
     yt-dlp
     yq
+    zoxide
   ] ++ inputs.darwin-frameworks ++ lsps;
 
   home.sessionVariables =

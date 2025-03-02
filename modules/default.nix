@@ -1,7 +1,7 @@
 {
   imports = [
     ./emacs
-    ./nvim
+    ./vim
     ./tmux
     ./zsh
   ];

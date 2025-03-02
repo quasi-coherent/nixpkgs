@@ -1,0 +1,3 @@
+es() { command emacs --daemon="$@" }
+ec() { command emacsclient -nw -s "$1" "$2" }
+e() { command emacs -nw "$@"}

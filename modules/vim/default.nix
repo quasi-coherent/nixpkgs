@@ -6,8 +6,16 @@ in
   programs.vim = {
     enable = true;
 
-    plugins = [
+    plugins = with pkgs.vimPlugins; [
+      fzf-vim
       themes.hemisu
+      vim-better-whitespace
+      vim-fugitive
+      vim-gitgutter
+      vim-sleuth
+      vim-surround
+      vim-vinegar
+      vim-which-key
     ];
 
     extraConfig = ''

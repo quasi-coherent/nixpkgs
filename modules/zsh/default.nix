@@ -63,9 +63,9 @@ in
     };
 
     initExtra = ''
-export TERM="xterm-256color"
-
 bindkey -e
+
+DISABLE_AUTO_TITLE="true"
 
 if [ -f ${config.home.homeDirectory}/.nix-profile/etc/profile.d/nix.sh ]; then
   source ${config.home.homeDirectory}/.nix-profile/etc/profile.d/nix.sh

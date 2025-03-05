@@ -33,6 +33,7 @@ in
   home.stateVersion = "24.11";
 
   home.packages = with pkgs; [
+    ansifilter
     awscli2
     awslogs
     aws-vault

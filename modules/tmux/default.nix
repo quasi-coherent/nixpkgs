@@ -88,6 +88,12 @@ set -g mode-style "fg=black bg=colour235"
 set -g window-status-current-style "fg=black bg=colour240"
 set -g window-status-activity-style "fg=colour234 bg=colour236"
 
+# A separate bar along the top that shows working directory and git branch.
+set -g pane-border-status top
+set -g pane-border-style "fg=colour240 bg=black"
+set -g pane-border-format " #{pane_current_path} #(cd #{pane_current_path}; git rev-parse --abbrev-ref HEAD) "
+
+set -g status-left-length 80
 set -g status-right-length 80
   '';
   };

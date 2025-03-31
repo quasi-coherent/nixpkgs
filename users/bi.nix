@@ -125,6 +125,7 @@ in
     "/usr/local/bin"
     "${homeDir}/.bin"
     "${homeDir}/.cargo/bin"
+    "${homeDir}/.krew/bin"
     "${homeDir}/.local/bin"
     "${homeDir}/go/bin"
   ];

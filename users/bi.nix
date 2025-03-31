@@ -74,8 +74,14 @@ in
     jq
     k9s
     kops
-    krew
     kubectl
+    kubectl-gadget
+    kubectl-ktop
+    kubectl-klock
+    kubectl-images
+    kubectl-neat
+    kubectl-tree
+    kubectl-validate
     kubectx
     kubernetes-helm
     lf
@@ -125,7 +131,6 @@ in
     "/usr/local/bin"
     "${homeDir}/.bin"
     "${homeDir}/.cargo/bin"
-    "${homeDir}/.krew/bin"
     "${homeDir}/.local/bin"
     "${homeDir}/go/bin"
   ];

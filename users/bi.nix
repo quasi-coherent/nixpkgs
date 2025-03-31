@@ -41,6 +41,7 @@ in
     bc
     cachix
     cloc
+    cmake
     coreutils
     coreutils-prefixed
     dhall
@@ -73,6 +74,7 @@ in
     jq
     k9s
     kops
+    krew
     kubectl
     kubectx
     kubernetes-helm
@@ -85,6 +87,7 @@ in
     opam
     openssh
     openssl
+    otel-desktop-viewer
     parquet-tools
     pgformatter
     rainfrog
@@ -110,7 +113,7 @@ in
   home.sessionVariables =
   let ZEROPW = "${homeDir}/go/src/gitlab.com/zeropw/zero";
   in {
-    EDITOR = "vim";
+    EDITOR = "emacs -Q -nw";
     JAVA_HOME = "/Library/Java/JavaVirtualMachines/openjdk-11.jdk/Contents/Home/";
     CARGO_HOME = "${homeDir}/.cargo";
     GOPATH = "${homeDir}/go";

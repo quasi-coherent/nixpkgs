@@ -4,7 +4,6 @@
   programs.tmux = {
     enable = true;
     keyMode = "emacs";
-    prefix = "C-]";
     newSession = true;
     clock24 = true;
     # This is broken and sets the shell to /bin/sh.
@@ -35,6 +34,11 @@
     ];
 
     extraConfig = ''
+# Rebind prefix to `C-;`
+unbind C-b
+set -g prefix C-\;
+bind-key C-\; send-prefix
+
 # The correct TERM within tmux is the following, even if
 # the TERM of the terminal that tmux is in should be different.
 set -g default-terminal tmux-256color
@@ -67,15 +71,16 @@ set -g pane-base-index 1
 set -g monitor-activity on
 set -g activity-action none
 
-# Copy/paste with hints, change triggers/highlight key.
-set -g @thumbs-key F
-bind-key \; thumbs-pick
+# Push a pane from another window into this one interactively.
+# `C-; m` splits vertically and `C-; M` horizontally.
+bind-key m choose-window -F "#{window_index}: #{window_name}" "join-pane -h -t %%"
+bind-key M choose-window -F "#{window_index}: #{window_name}" "join-pane -v -t %%"
 
-# fzf in tmux with `C-] C-f`
+# fzf in tmux with `C-; C-f`
 TMUX_FZF_LAUNCH_KEY="C-f"
 
-# Refresh status bar every 5 seconds
-set -g status-interval 5
+# Refresh status bar every 4 seconds
+set -g status-interval 4
 set -g status-justify left
 
 # Status bar appearance (black and gray, less conspicuous)

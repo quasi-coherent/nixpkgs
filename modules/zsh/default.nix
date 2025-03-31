@@ -4,14 +4,13 @@ let
   functions = [
     ./functions/cargo-clean-all
     ./functions/colors
-    ./functions/emacs
     ./functions/extract
     ./functions/json-pretty
   ];
   initExtraFunctions = builtins.foldl' (acc: f: acc + "\n" + builtins.readFile f) "" functions;
   shellAliases = {
     nuke-all = "nix-collect-garbage -d && docker system prune --volumes --force";
-    fzf = "fzf --height 50% --border";
+    fzf = "fzf --height 50% --border=none";
     gcm = "git checkout master 2>/dev/null || git checkout main";
     cdd = "cd $ZEROPW";
     ls = "eza";
@@ -23,6 +22,8 @@ let
     lt = "eza --tree";
     tree = "eza --tree";
     k = "kubectl";
+    e = "emacs -nw";
+    ec = "emacsclient -nw";
   };
 
 in

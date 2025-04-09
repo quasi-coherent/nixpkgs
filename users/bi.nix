@@ -97,6 +97,7 @@ in
     parquet-tools
     pgformatter
     rainfrog
+    reattach-to-user-namespace
     ripgrep
     ocamlPackages.rtop
     sd

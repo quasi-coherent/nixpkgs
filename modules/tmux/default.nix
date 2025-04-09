@@ -53,11 +53,18 @@ set -g default-terminal tmux-256color
 set -s extended-keys on
 set -as terminal-features 'xterm*:extkeys'
 
+# Center cursor and window in copy-mode like emacs
+bind-key -T copy-mode C-l send-keys -X scroll-middle
+# Yank to system clipboard
+bind-key -T copy-mode M-w send -X copy-pipe-and-cancel 'reattach-to-user-namespace pbcopy'
+bind-key -T copy-mode C-k send -X copy-pipe-end-of-line-and-cancel 'reattach-to-user-namespace pbcopy'
+
 # Do not rename windows automatically
 set -g allow-rename off
 
 # Only resize the currently-viewed window not the whole session
-set -g aggressive-resize on
+set -g window-size latest
+setw -g aggressive-resize on
 
 # Forward formatted window titles to terminal
 set -g set-titles on
@@ -71,10 +78,11 @@ set -g pane-base-index 1
 set -g monitor-activity on
 set -g activity-action none
 
+## @@@@@ This doesn't work...
 # Push a pane from another window into this one interactively.
 # `C-; m` splits vertically and `C-; M` horizontally.
-bind-key m choose-window -F "#{window_index}: #{window_name}" "join-pane -h -t %%"
-bind-key M choose-window -F "#{window_index}: #{window_name}" "join-pane -v -t %%"
+# bind-key m choose-window -F "#{window_index}: #{window_name}" "join-pane -h -t %%"
+# bind-key M choose-window -F "#{window_index}: #{window_name}" "join-pane -v -t %%"
 
 # fzf in tmux with `C-; C-f`
 TMUX_FZF_LAUNCH_KEY="C-f"

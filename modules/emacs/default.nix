@@ -69,21 +69,37 @@
             (lsp-workspace-folders-remove (car folders))
             (setq folders (cdr folders)))))
 
+      (defun dmd/writeroom-mode ()
+      (interactive)
+      (cond ((bound-and-true-p writeroom-mode)
+             (writeroom-mode -1)
+             (display-line-numbers-mode 1)
+             (git-gutter-mode 1))
+            (t
+             (writeroom-mode 1)
+             (display-line-numbers-mode -1)
+             (git-gutter-mode -1))))
+
       ;; Global settings/modes
       (fset 'yes-or-no-p 'y-or-n-p)
       (global-display-line-numbers-mode 1)
       (global-hl-line-mode 1)
+      (global-auto-revert-mode 1)
       (column-number-mode 1)
       (winner-mode 1)
       (delete-selection-mode 1)
       (global-auto-revert-mode 1)
       (show-paren-mode 1)
+      (smartparens-global-mode 1)
+      (show-smartparens-global-mode 1)
+      (global-git-gutter-mode 1)
 
       (add-hook 'before-save-hook 'delete-trailing-whitespace)
       (add-hook 'minibuffer-setup-hook
                 (lambda ()
                   (make-local-variable 'kill-ring)))
 
+      (global-set-key (kbd "C-c w") 'dmd/writeroom-mode)
       (global-set-key (kbd "C-x C-b") 'ibuffer)
       (global-set-key (kbd "C-<return>") 'toggle-frame-fullscreen)
       (global-set-key (kbd "C-<backspace>")
@@ -112,6 +128,14 @@
         init = "(load-theme 'hemisu-dark 1)";
       };
 
+      writeroom-mode = {
+        enable = true;
+        config = ''
+          (setq writeroom-width 0.99
+                writeroom-fringes-outside-margins nil)
+        '';
+      };
+
       ##### Windows
 
       ace-window = {
@@ -120,10 +144,7 @@
         config = "(setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))";
       };
 
-      git-gutter = {
-        enable = true;
-        init = "(global-git-gutter-mode 1)";
-      };
+      git-gutter.enable = true;
 
       ##### Buffers
 
@@ -131,6 +152,13 @@
         enable = true;
         bind = { "C-c j" = "avy-goto-word-or-subword-1"; };
         config = "(setq avy-all-windows t)";
+      };
+
+      expand-region = {
+        enable = true;
+        bind = {
+          "C-=" = "er/expand-region";
+        };
       };
 
       move-text = {
@@ -145,14 +173,19 @@
       multiple-cursors = {
         enable = true;
         bind = {
+          "M-n" = "mc/mark-next-like-this";
+          "M-p" = "mc/mark-previous-like-this";
           "C-c m a" = "mc/mark-all-like-this";
           "C-c m r" = "mc/mark-all-in-region";
-          "C-c m n" = "mc/mark-next-like-this";
-          "C-c m p" = "mc/mark-previous-like-this";
+          "C-c m N" = "mc/mark-next-like-this-word";
+          "C-c m P" = "mc/mark-previous-like-this-word";
           "C-c u n" = "mc/unmark-next-like-this";
           "C-c u p" = "mc/unmark-previous-like-this";
           "C-c s n" = "mc/skip-to-next-like-this";
           "C-c s p" = "mc/skip-to-previous-like-this";
+          "C-c e l" = "mc/edit-lines";
+          "C-c e m" = "mc/edit-beginnings-of-lines";
+          "C-c e e" = "mc/edit-ends-of-lines";
         };
         config = ''
           (setq mc/always-run-for-all 1
@@ -163,11 +196,6 @@
       smartparens = {
         enable = true;
         diminish = [ "smartparens-mode" ];
-        config = ''
-          (require 'smartparens-config)
-          (smartparens-global-mode 1)
-          (show-smartparens-global-mode 1)
-        '';
       };
 
       ##### Files
@@ -176,7 +204,7 @@
         enable = true;
         diminish = [ "auto-revert-mode" ];
         bind = { "C-x R" = "revert-buffer"; };
-        config = "(global-auto-revert-mode 1)";
+        config = "(setq auto-revert-verbose nil)";
       };
 
       dired = {
@@ -660,15 +688,15 @@
         '';
       };
 
-      sqlformat = {
-        enable = true;
-        mode = [ ''("\\.sql\\'" . sql-mode)'' ];
-        hook = [ "(sql-mode . sqlformat-on-save-mode)" ];
-        config = ''
-          (setq sqlformat-command 'pgformatter
-                sqlformat-args '("-f1" "-L" "-s2" "-w90" "-t" "-g" "--no-space-function"))
-        '';
-      };
+      # sqlformat = {
+      #   enable = true;
+      #   mode = [ ''("\\.sql\\'" . sql-mode)'' ];
+      #   hook = [ "(sql-mode . sqlformat-on-save-mode)" ];
+      #   config = ''
+      #     (setq sqlformat-command 'pgformatter
+      #           sqlformat-args '("-f1" "-L" "-s2" "-B" "-w100"))
+      #   '';
+      # };
 
       lsp-sqls.enable = true;
 

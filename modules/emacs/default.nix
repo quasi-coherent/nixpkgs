@@ -69,16 +69,13 @@
             (lsp-workspace-folders-remove (car folders))
             (setq folders (cdr folders)))))
 
-      (defun dmd/writeroom-mode ()
+      (defun dmd/darkroom-mode ()
       (interactive)
-      (cond ((bound-and-true-p writeroom-mode)
-             (writeroom-mode -1)
-             (display-line-numbers-mode 1)
-             (git-gutter-mode 1))
-            (t
-             (writeroom-mode 1)
-             (display-line-numbers-mode -1)
-             (git-gutter-mode -1))))
+      (cond ((bound-and-true-p darkroom-mode)
+             (darkroom-mode -1)
+             (display-line-numbers-mode 1))
+            (t (darkroom-mode 1)
+               (display-line-numbers-mode -1))))
 
       ;; Global settings/modes
       (fset 'yes-or-no-p 'y-or-n-p)
@@ -90,16 +87,13 @@
       (delete-selection-mode 1)
       (global-auto-revert-mode 1)
       (show-paren-mode 1)
-      (smartparens-global-mode 1)
-      (show-smartparens-global-mode 1)
-      (global-git-gutter-mode 1)
 
       (add-hook 'before-save-hook 'delete-trailing-whitespace)
       (add-hook 'minibuffer-setup-hook
                 (lambda ()
                   (make-local-variable 'kill-ring)))
 
-      (global-set-key (kbd "C-c w") 'dmd/writeroom-mode)
+      (global-set-key (kbd "C-c w") 'dmd/darkroom-mode)
       (global-set-key (kbd "C-x C-b") 'ibuffer)
       (global-set-key (kbd "C-<return>") 'toggle-frame-fullscreen)
       (global-set-key (kbd "C-<backspace>")
@@ -128,12 +122,9 @@
         init = "(load-theme 'hemisu-dark 1)";
       };
 
-      writeroom-mode = {
+      darkroom = {
         enable = true;
-        config = ''
-          (setq writeroom-width 0.99
-                writeroom-fringes-outside-margins nil)
-        '';
+        config = "(setq darkroom-margins 0.99)";
       };
 
       ##### Windows
@@ -144,7 +135,10 @@
         config = "(setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))";
       };
 
-      git-gutter.enable = true;
+      git-gutter = {
+        enable = true;
+        init = "(global-git-gutter-mode 1)";
+      };
 
       ##### Buffers
 
@@ -196,6 +190,11 @@
       smartparens = {
         enable = true;
         diminish = [ "smartparens-mode" ];
+        config = ''
+          (require 'smartparens-config)
+          (smartparens-global-mode 1)
+          (show-smartparens-global-mode 1)
+        '';
       };
 
       ##### Files

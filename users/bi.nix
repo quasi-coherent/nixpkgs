@@ -41,6 +41,7 @@ in
     bc
     cachix
     cloc
+    cloudsmith-cli
     cmake
     coreutils
     coreutils-prefixed

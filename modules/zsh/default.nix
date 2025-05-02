@@ -4,6 +4,7 @@ let
   functions = [
     ./functions/cargo-clean-all
     ./functions/colors
+    ./functions/emacs
     ./functions/extract
     ./functions/json-pretty
   ];
@@ -22,8 +23,6 @@ let
     lt = "eza --tree";
     tree = "eza --tree";
     k = "kubectl";
-    e = "emacs -nw";
-    ec = "emacsclient -nw";
   };
 
 in

@@ -1,0 +1,9 @@
+emacsd () {
+    if [ -f $1 ] ; then
+        emacs -nw --daemon=$1
+    else
+        emacs -nw --daemon
+    fi
+}
+
+e () { emacsclient -c -nw -a= "${1:-.}" }

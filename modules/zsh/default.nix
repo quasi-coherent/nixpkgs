@@ -47,22 +47,31 @@ in
     autosuggestion.enable = true;
     defaultKeymap = "emacs";
     enableCompletion = true;
-    history.extended = true;
-    history.share = true;
-    history.ignoreSpace = true;
-    history.save = 100000;
-    history.size = 100000;
+    history = {
+      extended = true;
+      share = true;
+      ignoreSpace = true;
+      saveNoDups = true;
+      save = 100000;
+      size = 100000;
+    };
+    historySubstringSearch.enable = true;
+    historySubstringSearch.searchUpKey = "^P";
+    historySubstringSearch.searchDownKey = "^N";
 
     oh-my-zsh = {
       enable = true;
       theme = "bureau";
       plugins = [
+        "docker"
         "git"
+        "kubectl"
+        "kubectx"
         "ssh-agent"
       ];
     };
 
-    initExtra = ''
+    initContent = ''
 bindkey -e
 
 DISABLE_AUTO_TITLE="true"

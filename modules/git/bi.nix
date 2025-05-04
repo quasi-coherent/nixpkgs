@@ -9,9 +9,11 @@
 
     extraConfig = {
       github.user = "daniel.donohue";
-      pull.rebase = true;
       http.postBuffer = 1048576000;
       credential.helper = "store";
+      merge.conflictStyle = "zdiff3";
+      pull.rebase = true;
+      rebase.autoSquash = true;
       tag.gpgSign = true;
     };
 

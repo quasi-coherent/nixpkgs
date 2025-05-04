@@ -8,13 +8,13 @@ let
     gopls
     haskell-language-server
     helm-ls
-    jdt-language-server
+    jdt-language-server # java
     nodePackages.vscode-json-languageserver
-    marksman
-    nil
+    marksman # md
+    nil # nix
     pyright
-    nixpkgs-unstable.rust-analyzer
-    metals
+    rust-analyzer
+    metals # scala
     sqls
     terraform-ls
     nodePackages.typescript-language-server
@@ -33,12 +33,13 @@ in
   home.stateVersion = "24.11";
 
   home.packages = with pkgs; [
-    ansifilter
+    alacritty
+    ansifilter # remove terminal escape sequences from input
     awscli2
-    awslogs
+    awslogs # cloudwatch log streams
     aws-vault
-    bat
-    bc
+    bat # better `cat`
+    bc # calculator
     cachix
     cloc
     cloudsmith-cli
@@ -48,30 +49,28 @@ in
     dhall
     dhall-yaml
     dhall-json
-    difftastic
+    difftastic # `difft`: syntax-aware file diff
     direnv
-    dive
-    doggo
-    duf
-    du-dust
-    dune_3
+    dive # introspect docker image layers
+    doggo # better `dig`
+    duf # better `df`
+    du-dust # `dust`: better `du`
+    dune_3 # `dune`: ocaml build system
     eksctl
     emacs-lsp-booster
-    exiftool
-    eza
-    fd
-    feh
-    ffmpeg
-    fzf
+    exiftool # exif data for image files
+    eza # better `ls`
+    fd # better `find`
+    fzf # command-line fuzzy finder
     google-cloud-sdk
-    git-filter-repo
+    git-filter-repo # rewrite git history
     git-hub
     gnupg
-    grpcurl
+    grpcurl # curl for gRPC
     htop
-    httpie
-    ispell
-    jless
+    httpie # `http`: better `curl`
+    ispell # spellcheck
+    jless # `less` for json
     jq
     k9s
     kops
@@ -85,37 +84,36 @@ in
     kubectl-validate
     kubectx
     kubernetes-helm
-    lf
+    lf # terminal file manager
     lua
-    measureme
-    moreutils
-    nodejs_20
+    measureme # rustc profiling
+    moreutils # expanded core unix utilities
     ocamlformat_0_26_1
-    opam
+    opam # ocaml package manager
     openssh
     openssl
-    otel-desktop-viewer
-    parquet-tools
-    pgformatter
-    rainfrog
-    reattach-to-user-namespace
+    otel-desktop-viewer # otel span collector in-browser
+    parquet-tools # introspect .parquet
+    pgformatter # not-very-good sqlformat for pgsql
+    rainfrog # terminal db client
+    ra-multiplex # multiplexer for rust-analyzer
+    reattach-to-user-namespace # tmux/system clipboard share
     ripgrep
-    ocamlPackages.rtop
-    sd
-    steampipe
-    stern
-    tree
+    ocamlPackages.rtop # ocaml repl
+    scc
+    sd # better `sed`
+    steampipe # query apis with sql
+    stern # k8s log tailing
     tree-sitter
     terraform
     terraform-ls
     tflint
+    util-linux # Assorted utilities
     ocamlPackages.utop
-    nodePackages.typescript
     wget
     xmlsec
     yt-dlp
     yq
-    zoxide
   ] ++ inputs.darwin-frameworks ++ lsps;
 
   home.sessionVariables =

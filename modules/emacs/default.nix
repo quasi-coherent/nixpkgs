@@ -525,10 +525,7 @@
 
       ##### Languages
 
-      lsp-bash = {
-        enable = true;
-        hook = [ "(sh-mode . lsp-deferred)" ];
-      };
+      lsp-bash.enable = true;
 
       dhall-mode = {
         enable = true;
@@ -544,10 +541,7 @@
         mode = [ ''"^Dockerfile\\'"'' ];
       };
 
-      lsp-dockerfile = {
-        enable = true;
-        hook = [ "(dockerfile-mode . lsp-deferred)" ];
-      };
+      lsp-dockerfile.enable = true;
 
       go-mode = {
         enable = true;
@@ -591,11 +585,6 @@
       json-mode = {
         enable = true;
         mode = [ ''"\\.json\\'"'' ];
-      };
-
-      lsp-json = {
-        enable = true;
-        hook = [ "(json-mode . lsp-deferred)" ];
         config = ''
           (add-hook 'json-mode
                     (lambda ()
@@ -603,15 +592,14 @@
         '';
       };
 
+      lsp-json.enable = true;
+
       markdown-mode = {
         enable = true;
         mode = [ ''"\\.md\\'"'' ];
       };
 
-      lsp-marksman = {
-        enable = true;
-        hook = [ "(markdown-mode . lsp-deferred)" ];
-      };
+      lsp-marksman.enable = true;
 
       nix-mode = {
         enable = true;
@@ -619,7 +607,7 @@
         hook = [ "(nix-mode . subword-mode)" ];
         config = ''
           (setq tab-width 2
-                nix-mode-use-smie 1)
+                nix-mode-use-smie t)
         '';
       };
 
@@ -628,7 +616,7 @@
         hook = [ "(nix-mode . lsp-deferred)" ];
         config = ''
           (setq lsp-nix-nil-formatter ["nixfmt"]
-                                   lsp-nix-nil-auto-eval-inputs nil)'';
+                lsp-nix-nil-auto-eval-inputs nil)'';
       };
 
       protobuf-mode = {
@@ -667,9 +655,10 @@
           (setq lsp-rust-analyzer-proc-macro-enable t
                 lsp-rust-analyzer-cargo-watch-enable t
                 lsp-rust-analyzer-cargo-watch-command "check"
+                lsp-rust-analyzer-cargo-extra-env nil
                 rustic-format-trigger 'on-save
                 rustic-format-display-method 'ignore
-                rustic-rustfmt-args "--edition 2021")
+                rustic-rustfmt-args "--edition 2024")
         '';
       };
 
@@ -708,27 +697,21 @@
       typescript-mode = {
         enable = true;
         mode = [ ''("\\.ts$\\'" . typescript-mode)'' ];
-        hook = [ "(typescript-mode . lsp-deferred)" ];
         config = ''
           (setq typescript-indent-level 2)
           (setq typescript-auto-indent-flag t)
         '';
       };
 
-      elint = {
-        enable = true;
-        hook = [ "(typescript-mode . lsp-deferred)" ];
-      };
+      elint.enable = true;
 
       yaml-mode = {
         enable = true;
         mode = [ ''"\\.yaml\\'"'' ];
-        hook = [ "(yaml-mode . subword-mode)" ];
       };
 
       lsp-yaml = {
         enable = true;
-        hook = [ "(yaml-mode . lsp-deferred)" ];
         config = ''
           (setq lsp-yaml-completion t)
           (setq lsp-yaml-custom-tags ["!reference"])

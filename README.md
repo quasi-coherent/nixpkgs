@@ -1,3 +1,3 @@
 # nixpkgs
 
-A nix flake holding my home-manager configuration for user environments.
+A nix flake holding a home-manager configuration.

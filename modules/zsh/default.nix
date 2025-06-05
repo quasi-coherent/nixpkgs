@@ -48,7 +48,6 @@ in
     autocd = true;
     autosuggestion = {
       enable = true;
-      highlight = "fg=#cedcce,bg=#778177,underline";
       strategy = [
         "history"
         "completion"
@@ -91,6 +90,9 @@ in
     initContent =
       let
         zshConfigEarlyInit = pkgs.lib.mkOrder 500 ''
+          ulimit -n 10240
+          bindkey -e
+
           if [ -f ${config.home.homeDirectory}/.nix-profile/etc/profile.d/nix.sh ]; then
             source ${config.home.homeDirectory}/.nix-profile/etc/profile.d/nix.sh
           fi
@@ -104,16 +106,12 @@ in
           fi
         '';
         zshConfig = pkgs.lib.mkOrder 1000 ''
-          ulimit -n 10240
-          bindkey -e
-        '';
-      in pkgs.lib.mkMerge [ zshConfigEarlyInit zshConfig ];
+          DISABLE_AUTO_TITLE="true"
 
-    envExtra = ''
-      DISABLE_AUTO_TITLE="true"
-      if [ -f ${config.home.homeDirectory}/.env-extras ]; then
-        source ${config.home.homeDirectory}/.env-extras
-      fi
-    '' + initExtraFunctions;
+          if [ -f ${config.home.homeDirectory}/.env-extras ]; then
+            source ${config.home.homeDirectory}/.env-extras
+          fi
+        '';
+      in pkgs.lib.mkMerge [ zshConfigEarlyInit zshConfig initExtraFunctions ];
   };
 }

@@ -13,6 +13,7 @@
       credential.helper = "store";
       merge.conflictStyle = "zdiff3";
       pull.rebase = true;
+      push.default = "upstream";
       rebase.autoSquash = true;
       tag.gpgSign = true;
     };

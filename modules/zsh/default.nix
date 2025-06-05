@@ -1,4 +1,4 @@
-{ config, ... }:
+{ pkgs, config, ... }:
 
 let
   functions = [
@@ -43,10 +43,18 @@ in
     inherit shellAliases;
 
     enable = true;
-    autocd = true;
-    autosuggestion.enable = true;
     defaultKeymap = "emacs";
-    enableCompletion = true;
+
+    autocd = true;
+    autosuggestion = {
+      enable = true;
+      highlight = "fg=#cedcce,bg=#778177,underline";
+      strategy = [
+        "history"
+        "completion"
+      ];
+    };
+
     history = {
       extended = true;
       share = true;
@@ -55,6 +63,7 @@ in
       save = 100000;
       size = 100000;
     };
+
     historySubstringSearch.enable = true;
     historySubstringSearch.searchUpKey = "^P";
     historySubstringSearch.searchDownKey = "^N";
@@ -71,42 +80,40 @@ in
       ];
     };
 
-    initContent = ''
-bindkey -e
+    enableCompletion = true;
+    completionInit = ''
+      if [ -f ${pkgs.zsh}/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
+        source ${pkgs.zsh}/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+      fi
 
-DISABLE_AUTO_TITLE="true"
+      source <(${pkgs.kubectl} completion zsh)
+    '';
+    initContent =
+      let
+        zshConfigEarlyInit = pkgs.lib.mkOrder 500 ''
+          if [ -f ${config.home.homeDirectory}/.nix-profile/etc/profile.d/nix.sh ]; then
+            source ${config.home.homeDirectory}/.nix-profile/etc/profile.d/nix.sh
+          fi
 
-if [ -f ${config.home.homeDirectory}/.nix-profile/etc/profile.d/nix.sh ]; then
-  source ${config.home.homeDirectory}/.nix-profile/etc/profile.d/nix.sh
-fi
+          if [ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then
+            source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+          fi
 
-if [ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then
-  source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
-fi
+          if [ -f ${config.home.homeDirectory}/.nix-profile/etc/profile.d/hm-session-vars.sh ]; then
+            source ${config.home.homeDirectory}/.nix-profile/etc/profile.d/hm-session-vars.sh
+          fi
+        '';
+        zshConfig = pkgs.lib.mkOrder 1000 ''
+          ulimit -n 10240
+          bindkey -e
+        '';
+      in pkgs.lib.mkMerge [ zshConfigEarlyInit zshConfig ];
 
-if [ -f ${config.home.homeDirectory}/.nix-profile/etc/profile.d/hm-session-vars.sh ]; then
-  source ${config.home.homeDirectory}/.nix-profile/etc/profile.d/hm-session-vars.sh
-fi
-
-if [ -f /usr/local/share/zsh/site-functions/aws_zsh_completer.sh ]; then
-  source /usr/local/share/zsh/site-functions/aws_zsh_completer.sh
-fi
-
-if [ -f ${config.home.homeDirectory}/.env-extras ]; then
-  source ${config.home.homeDirectory}/.env-extras
-fi
-
-if command -v kubectl 1>/dev/null 2>&1; then
-  source <(kubectl completion zsh)
-fi
-
-if command -v direnv 1>/dev/null 2>&1; then
-  eval "$(direnv hook zsh)"
-fi
-
-if [[ -n $VIRTUAL_ENV && -e $VIRTUAL_ENV/bin/activate ]]; then
-  source "$VIRTUAL_ENV/bin/activate"
-fi
+    envExtra = ''
+      DISABLE_AUTO_TITLE="true"
+      if [ -f ${config.home.homeDirectory}/.env-extras ]; then
+        source ${config.home.homeDirectory}/.env-extras
+      fi
     '' + initExtraFunctions;
   };
 }

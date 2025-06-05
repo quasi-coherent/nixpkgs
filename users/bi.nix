@@ -21,6 +21,17 @@ let
     yaml-language-server
   ];
   homeDir = "/Users/danieldonohue";
+  userEnv = {
+    EDITOR = "emacs -Q -nw";
+    JAVA_HOME = "/Library/Java/JavaVirtualMachines/openjdk-11.jdk/Contents/Home/";
+    CARGO_HOME = "${homeDir}/.cargo";
+    GOPATH = "${homeDir}/go";
+    ZEROPW = "${homeDir}/go/src/gitlab.com/zeropw/zero";
+    BI_HOME = "${homeDir}/bi";
+    SCCACHE_DIRECT = "true";
+    SCCACHE_DIR = "${homeDir}/.cache/sccache";
+    SCCACHE_CACHE_SIZE = "15G";
+  };
 in
 {
   imports = [
@@ -58,6 +69,7 @@ in
     dune_3 # `dune`: ocaml build system
     eksctl
     emacs-lsp-booster
+    emacsPackages.multiple-cursors # for nearly config-less default EDITOR
     exiftool # exif data for image files
     eza # better `ls`
     fd # better `find`
@@ -73,6 +85,7 @@ in
     jless # `less` for json
     jq
     k9s
+    kcat # `kafkacat`
     kops
     kubectl
     kubectl-gadget
@@ -88,6 +101,7 @@ in
     lua
     measureme # rustc profiling
     moreutils # expanded core unix utilities
+    nodejs-slim
     ocamlformat_0_26_1
     opam # ocaml package manager
     openssh
@@ -114,19 +128,11 @@ in
     xmlsec
     yt-dlp
     yq
+    zsh-autosuggestions
+    zsh-autosuggestions-abbreviations-strategy
   ] ++ inputs.darwin-frameworks ++ lsps;
 
-  home.sessionVariables =
-  let ZEROPW = "${homeDir}/go/src/gitlab.com/zeropw/zero";
-  in {
-    EDITOR = "emacs -Q -nw";
-    JAVA_HOME = "/Library/Java/JavaVirtualMachines/openjdk-11.jdk/Contents/Home/";
-    CARGO_HOME = "${homeDir}/.cargo";
-    GOPATH = "${homeDir}/go";
-    ZEROPW = "${ZEROPW}";
-    PROJECT_DIR = "${ZEROPW}";
-  };
-
+  home.sessionVariables = userEnv;
   home.sessionPath = [
     "/usr/local/bin"
     "${homeDir}/.bin"
@@ -138,4 +144,9 @@ in
   programs.emacs.enable = true;
   programs.direnv.enableZshIntegration = true;
   programs.home-manager.enable = true;
+  programs.zsh.dirHashes = {
+    zero = "${userEnv.ZEROPW}";
+    events = "${userEnv.BI_HOME}/data-science/bi-events";
+    repos = "${homeDir}/github";
+  };
 }

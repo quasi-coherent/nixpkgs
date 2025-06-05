@@ -22,10 +22,7 @@
       (put 'minibuffer-history 'history-length 100)
       (put 'kill-ring 'history-length 25)
 
-      (setq user-full-name "Daniel Donohue"
-            user-login-name "Daniel Donohue"
-            user-mail-address "d.michael.donohue@gmail.com"
-            inhibit-startup-screen t
+      (setq inhibit-startup-screen t
             inhibit-startup-echo-area-message (user-login-name)
             make-backup-files nil
             create-lockfiles nil
@@ -45,20 +42,24 @@
        inhibit-startup-screen 1
        inhibit-scratch-message ""
        inhibit-startup-echo-area-message (user-login-name)
+       initial-scratch-message nil
        confirm-nonexistent-file-or-buffer 1
+       confirm-kill-processes nil
        kill-ring-max 128
        load-prefer-newer 1
        mark-ring-max 128
        make-backup-files nil
        create-lockfiles nil
+       auto-save-default nil
        scroll-conservatively most-positive-fixnum
        view-read-only 1
-       user-full-name "Daniel Donohue"
-       user-mail-address "d.michael.donohue@gmail.com"
        use-package-always-ensure 1
        indent-tabs-mode nil
        read-extended-command-predicate #'command-completion-default-include-p
       )
+      ;; I don't care.
+      (defalias 'view-emacs-news 'ignore)
+      (defalias 'describe-gnu-project 'ignore)
 
       ;; Functions
       (defun dmd/destroy-lsp ()
@@ -77,6 +78,14 @@
             (t (darkroom-mode 1)
                (display-line-numbers-mode -1))))
 
+      (defun dmd/kill-other-buffers (&optional arg)
+        (interactive "P")
+        (when (yes-or-no-p (format "Killing all buffers except \"%s\"? "
+                                   (buffer-name)))
+          (mapc 'kill-buffer (delq (current-buffer) (buffer-list)))
+          (when (equal '(4) arg) (delete-other-windows))
+          (message "Buffers deleted!")))
+
       ;; Global settings/modes
       (fset 'yes-or-no-p 'y-or-n-p)
       (global-display-line-numbers-mode 1)
@@ -93,7 +102,10 @@
                 (lambda ()
                   (make-local-variable 'kill-ring)))
 
+      (global-set-key (kbd "M-s M-f") 'forward-sexp)
+      (global-set-key (kbd "M-s M-b") 'backward-sexp)
       (global-set-key (kbd "C-c w") 'dmd/darkroom-mode)
+      (global-set-key (kbd "C-x y") 'dmd/kill-other-buffers)
       (global-set-key (kbd "C-x C-b") 'ibuffer)
       (global-set-key (kbd "C-<return>") 'toggle-frame-fullscreen)
       (global-set-key (kbd "C-<backspace>")
@@ -194,6 +206,16 @@
           (require 'smartparens-config)
           (smartparens-global-mode 1)
           (show-smartparens-global-mode 1)
+        '';
+      };
+
+      undo-tree = {
+        enable = true;
+        diminish = [ "undo-tree-mode" ];
+        bind = { "C-c _" = "undo-tree-visualize"; };
+        config = ''
+          (global-undo-tree-mode 1)
+          (unbind-key "M-_" undo-tree-map)
         '';
       };
 
@@ -378,7 +400,7 @@
         enable = true;
         diminish = [ "auto-revert-mode" ];
         command = [ "magit-status" ];
-        bind = { "C-c C-g" = "magit-status"; };
+        bind = { "C-c G" = "magit-status"; };
       };
 
       projectile = {
@@ -465,6 +487,7 @@
           (setq lsp-diagnostics-provider :flycheck
                 lsp-modeline-diagnostics-enable t
                 lsp-modeline-diagnostics-scope :workspace
+                lsp-restart 'ignore
                 lsp-idle-delay 0.6
                 read-process-output-max (* 6 1024 1024) ;; 6mb
                 gc-cons-threshold (* 100 1024 1024)
@@ -655,10 +678,11 @@
           (setq lsp-rust-analyzer-proc-macro-enable t
                 lsp-rust-analyzer-cargo-watch-enable t
                 lsp-rust-analyzer-cargo-watch-command "check"
-                lsp-rust-analyzer-cargo-extra-env nil
+                lsp-rust-analyzer-cargo-extra-args ["--profile" "rust-analyzer"]
+                lsp-rust-analyzer-cargo-extra-env (("RUSTC_WRAPPER" . nil))
                 rustic-format-trigger 'on-save
                 rustic-format-display-method 'ignore
-                rustic-rustfmt-args "--edition 2024")
+                rustic-rustfmt-args "--edition 2021")
         '';
       };
 
